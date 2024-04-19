@@ -14,10 +14,11 @@ namespace lexer {
 		int line = 1;	// line 1
 		char peek = 0;	// 0 means nothing
 		std::unordered_map<std::string, Word> words;
-
+		void SetFilePointer(FILE* _fp);
 		void Reverse(Word w);
 		void Readch();
 		Token Scan();
+		FILE* fp;
 	private:
 		static Lexer* instance;
 		Lexer();

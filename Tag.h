@@ -52,5 +52,6 @@ namespace lexer {
         NUM,         // 数字常量
         REAL,        // 浮点常量
         IDENTIFIER,  // id
+        BASIC
     };
 }
