@@ -21,7 +21,18 @@ int main() {
     {
         Token* t = GetLexer().Scan();
         if (t->tag == Tag::END) break;
-        std::cout << '<' << t->tag << ", " << t->ToString() << '>' << std::endl;
+        if (t->tag == Tag::UNDEFINED) {
+            std::cout << "ERROR: Undefined symbol '" << t->ToString() << "' at line: " << GetLexer().line << std::endl;
+        }
+        else if (t->tag == Tag::IDENTIFIER) {
+            std::cout << "<id, " << t->ToString() << '>' << std::endl;
+        }
+        else if (t->tag == Tag::NUM || t->tag == Tag::REAL) {
+            std::cout << "<num, " << t->ToString() << '>' << std::endl;
+        }
+        else {
+            std::cout << '<' << t->ToString() << '>' << std::endl;
+        }
     }
     return 0;
 }

@@ -135,7 +135,9 @@ Token* Lexer::Scan() {
         return w;
     }
     // 未定义的标识符
-    return new Word(std::string(1, peek), Tag::UNDEFINED);
+    char ch = peek;
+    Readch();
+    return new Word(std::string(1, ch), Tag::UNDEFINED);
 
 }
 
