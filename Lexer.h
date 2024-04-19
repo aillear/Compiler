@@ -6,30 +6,6 @@
 #include"Tag.h"
 
 namespace lexer {
-	class Lexer
-	{
-	public:
-		// Singleton
-		static Lexer& Instance();
-		int line = 1;	// line 1
-		char peek = 0;	// 0 means nothing
-		std::unordered_map<std::string, Word> words;
-		void SetFilePointer(FILE* _fp);
-		void Reverse(Word w);
-		void Readch();
-		Token Scan();
-		FILE* fp;
-	private:
-		static Lexer* instance;
-		Lexer();
-		~Lexer();
-	};
-
-	// use this to get singleton
-	Lexer& GetLexer();
-
-	enum Tag {};
-
 	class Token 
 	{
 	public:
@@ -45,7 +21,7 @@ namespace lexer {
 		const int value;
 		Num(int v) : Token(Tag::NUM), value(v) { ; }
 		~Num();
-		std::string ToString();
+		std::string ToString() override;
 	};
 
 	class Real : public Token
@@ -54,7 +30,7 @@ namespace lexer {
 		const double value;
 		Real(double v) : Token(Tag::REAL), value(v) { ; }
 		~Real();
-		std::string ToString();
+		std::string ToString() override;
 	};
 
 	class Word : public Token
@@ -63,7 +39,7 @@ namespace lexer {
 		std::string lexeme;
 		Word(std::string str, Tag _tag) : Token(_tag), lexeme(str) { ; }
 		~Word();
-		std::string ToString();
+		std::string ToString() override;
 	};
 
 	class Type : public Word
@@ -85,4 +61,27 @@ namespace lexer {
 	private:
 		std::vector<std::set<std::pair<std::string, std::string>>> table;
 	};
+
+	class Lexer
+	{
+	public:
+		// Singleton
+		static Lexer& Instance();
+		int line = 1;	// line 1
+		char peek = ' ';	//  space
+		std::unordered_map<std::string, Word> words;
+		void SetFilePointer(FILE* _fp);
+		void Reverse(Word w);
+		void Readch();
+		bool Readch(char c);
+		Token* Scan();
+		FILE* fp;
+	private:
+		static Lexer* instance;
+		Lexer();
+		~Lexer();
+	};
+
+	// use this to get singleton
+	Lexer& GetLexer();
 }

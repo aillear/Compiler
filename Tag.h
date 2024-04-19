@@ -35,23 +35,22 @@ namespace lexer {
         LOGICAL_NOT, // !
         BITWISE_AND, // &
         BITWISE_OR,  // |
-        BITWISE_XOR, // ^
-        BITWISE_NOT, // ~
-        LEFT_SHIFT,  // <<
-        RIGHT_SHIFT, // >>
         ASSIGN,      // =
         INCREMENT,   // ++
         DECREMENT,   // --
-        CONDITIONAL, // ? :
         DOT,         // .
-        ARROW,       // ->
-        ADDRESS_OF,  // &
-        DEREFERENCE, // *
-        ARRAY_INDEX, // []
-        COMMA,       // ,
+        LEFT_PAREN,     // (
+        RIGHT_PAREN,    // )
+        LEFT_BRACKET,   // [
+        RIGHT_BRACKET,  // ]
+        LEFT_BRACE,     // {
+        RIGHT_BRACE,    // }
+        COMMA,          // ,
+        SEMICOLON,      // ;
         NUM,         // 数字常量
         REAL,        // 浮点常量
         IDENTIFIER,  // id
-        BASIC
+        BASIC,
+        END,         // end
     };
 }
