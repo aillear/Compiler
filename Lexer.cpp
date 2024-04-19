@@ -149,10 +149,10 @@ Lexer::Lexer() {
     Reverse(Word("break", Tag::BREAK));
     Reverse(Word("true", Tag::TRUE));
     Reverse(Word("false", Tag::FALSE));
-    Reverse(Type("int", Tag::BASIC, 4));
-    Reverse(Type("float", Tag::BASIC, 8));
-    Reverse(Type("bool", Tag::BASIC, 1));
-    Reverse(Type("char", Tag::BASIC, 1));
+    Reverse(Type("int", Tag::INT, 4));
+    Reverse(Type("float", Tag::FLOAT, 8));
+    Reverse(Type("bool", Tag::BOOL, 1));
+    Reverse(Type("char", Tag::CHAR, 1));
 }
 Lexer::~Lexer() { ; }
 
