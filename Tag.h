@@ -3,29 +3,22 @@ namespace lexer {
     enum Tag {
         // 
         UNDEFINED = 0,
-        AUTO,
         BREAK,
         CASE,
         CHAR,
         CONTINUE,
         DO,
         ELSE,
-        ENUM,
         FLOAT,
         FOR,
-        GOTO,
         IF,
         INT,
-        LONG,
         RETURN,
-        SHORT,
-        SIGNED,
-        SIZEOF,
-        STATIC,
-        STRUCT,
         SWITCH,
         VOID,
         WHILE,
+        TRUE,
+        FALSE,
         PLUS,        // +
         MINUS,       // -
         MULTIPLY,    // *
@@ -56,10 +49,8 @@ namespace lexer {
         DEREFERENCE, // *
         ARRAY_INDEX, // []
         COMMA,       // ,
-        SIZEOF_OP,   // sizeof
-        CAST,         // (type)
         NUM,         // 数字常量
         REAL,        // 浮点常量
-        INDEX,       // id
+        IDENTIFIER,  // id
     };
 }
