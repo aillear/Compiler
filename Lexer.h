@@ -4,6 +4,7 @@
 #include<set>
 #include<vector>
 #include"Tag.h"
+#include <iomanip> 
 
 namespace lexer {
 	class Token 
@@ -51,15 +52,21 @@ namespace lexer {
 
 	};
 
+	// 定义符号表项
+	struct SymbolEntry {
+		std::string type;
+		std::string name;
+	};
+
 	class SymbolTable
 	{
 	public:
 		SymbolTable();
 		~SymbolTable();
-		void AddNewSymbol(Token t);
-		void OutputTable(std::string path);
+		void AddNewSymbol(const std::string& type, const std::string& name);
+		void OutputTable(const std::string& path);
 	private:
-		std::vector<std::set<std::pair<std::string, std::string>>> table;
+		std::vector<SymbolEntry> table;
 	};
 
 	class Lexer
