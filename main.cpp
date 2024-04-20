@@ -18,12 +18,14 @@ int main() {
     std::cout << "------------------------------" << std::endl;
     GetLexer().SetFilePointer(fp);
     SymbolTable symbolTable; // 创建符号表
+
     while (true)
     {
         Token* t = GetLexer().Scan();
         if (t->tag == Tag::END) break;
         if (t->tag == Tag::UNDEFINED) {
-            std::cout << "ERROR: Undefined symbol '" << t->ToString() << "' at line: " << GetLexer().line << std::endl;
+            std::cout << "ERROR: Undefined symbol '" << t->ToString() << "' at ( " 
+                << GetLexer().line << ", " << GetLexer().row << ")" << std::endl;
         }
         else if (t->tag == Tag::IDENTIFIER) {
             std::cout << "<id, " << t->ToString() << '>' << std::endl;

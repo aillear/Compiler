@@ -40,8 +40,12 @@ void Lexer::Reverse(Word w) {
 Token* Lexer::Scan() {
     // 处理空行
     for (;; Readch()) {
+        row++;
         if (peek == ' ' || peek == '\t') continue;
-        else if (peek == '\n') line++;
+        else if (peek == '\n') {
+            line++;
+            row = 1;
+        }
         else if (peek == EOF) return new Word("EOF", Tag::END);	// 
         else break;
     }

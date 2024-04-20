@@ -49,10 +49,9 @@ namespace lexer {
 		int width;
 		Type(std::string str, Tag _tag, int w) : Word(str, _tag), width(w) { ; }
 		~Type();
-
 	};
 
-	// 定义符号表项
+	// 瀹氫箟绗﹀彿琛ㄩ」
 	struct SymbolEntry {
 		std::string type;
 		std::string name;
@@ -75,6 +74,7 @@ namespace lexer {
 		// Singleton
 		static Lexer& Instance();
 		int line = 1;	// line 1
+		int row = 1;	// row 1
 		char peek = ' ';	//  space
 		std::unordered_map<std::string, Word> words;
 		void SetFilePointer(FILE* _fp);
