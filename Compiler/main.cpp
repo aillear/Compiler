@@ -1,4 +1,5 @@
 #include "Lexer.h"
+#include <fstream>
 #pragma warning(disable:4996) // 禁用警告 4996（_CRT_SECURE_NO_WARNINGS 相关的警告）
 
 using namespace lexer;
@@ -19,27 +20,34 @@ int main() {
     GetLexer().SetFilePointer(fp);
     SymbolTable symbolTable; // 创建符号表
 
+    // 输出文件
+    std::ofstream outFile("sample.out");
+    if (!outFile.is_open()) {
+        std::cerr << "Error: Unable to open file for writing: sample.out" << std::endl;
+    }
     while (true)
     {
-        Token* t = GetLexer().Scan();
-        if (t->tag == Tag::END) break;
+        
+        Token* t = GetLexer().Scan();  // 获取本次的Token
+        if (t->tag == Tag::END) break; 
         if (t->tag == Tag::UNDEFINED) {
-            std::cout << "ERROR: Undefined symbol '" << t->ToString() << "' at ( " 
+            outFile << "ERROR: Undefined symbol '" << t->ToString() << "' at (" 
                 << GetLexer().line << ", " << GetLexer().row << ")" << std::endl;
         }
         else if (t->tag == Tag::IDENTIFIER) {
-            std::cout << "<id, " << t->ToString() << '>' << std::endl;
+            outFile << "<id, " << t->ToString() << '>' << std::endl;
             symbolTable.AddNewSymbol("IDENTIFIER", t->ToString());
         }
         else if (t->tag == Tag::NUM || t->tag == Tag::REAL) {
-            std::cout << "<num, " << t->ToString() << '>' << std::endl;
+            outFile << "<num, " << t->ToString() << '>' << std::endl;
             symbolTable.AddNewSymbol("NUMBER", t->ToString());
         }
         else {
-            std::cout << "<" << t->ToString() << '>' << std::endl;
+            outFile << "<" << t->ToString() << '>' << std::endl;
         }
     }
-
-    symbolTable.OutputTable("symbol.sym"); // 输出符号表
+    outFile.close();
+    std::cout << "Token list has been written to: sample.out" << std::endl;
+    symbolTable.OutputTable("sample.sym"); // 输出符号表
     return 0;
 }

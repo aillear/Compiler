@@ -234,22 +234,23 @@ void SymbolTable::OutputTable(const std::string& path) {
         std::cerr << "Error: Unable to open file for writing: " << path << std::endl;
         return;
     }
+    // 只要identifier
     // 分类符号并按照类别输出
-    for (const auto& entry : table) {
+   /* for (const auto& entry : table) {
         if (entry.type == "KEYWORD" ) {
             outFile << entry.type << "\t" << std::left << std::setw(10) << entry.name << std::endl;
         }
-    }
+    }*/
     for (const auto& entry : table) {
         if (entry.type == "IDENTIFIER") {
             outFile << entry.type << "\t" << std::left << std::setw(10) << entry.name << std::endl;
         }
     }
-    for (const auto& entry : table) {
-        if (entry.type == "NUMBER") {
-            outFile << entry.type << "\t" << std::left << std::setw(10) << entry.name << std::endl;
-        }
-    }
+    //for (const auto& entry : table) {
+    //    if (entry.type == "NUMBER") {
+    //        outFile << entry.type << "\t" << std::left << std::setw(10) << entry.name << std::endl;
+    //    }
+    //}
 
     outFile.close();
 
