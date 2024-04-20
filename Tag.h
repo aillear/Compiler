@@ -52,5 +52,6 @@ namespace lexer {
         REAL,        // 浮点常量
         IDENTIFIER,  // id
         END,         // end
+        KEYWORD,     // 关键词
     };
 }

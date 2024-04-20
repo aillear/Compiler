@@ -17,6 +17,7 @@ int main() {
     }
     std::cout << "------------------------------" << std::endl;
     GetLexer().SetFilePointer(fp);
+    SymbolTable symbolTable; // 创建符号表
     while (true)
     {
         Token* t = GetLexer().Scan();
@@ -26,13 +27,17 @@ int main() {
         }
         else if (t->tag == Tag::IDENTIFIER) {
             std::cout << "<id, " << t->ToString() << '>' << std::endl;
+            symbolTable.AddNewSymbol("IDENTIFIER", t->ToString());
         }
         else if (t->tag == Tag::NUM || t->tag == Tag::REAL) {
             std::cout << "<num, " << t->ToString() << '>' << std::endl;
+            symbolTable.AddNewSymbol("NUMBER", t->ToString());
         }
         else {
-            std::cout << '<' << t->ToString() << '>' << std::endl;
+            std::cout << "<" << t->ToString() << '>' << std::endl;
         }
     }
+
+    symbolTable.OutputTable("symbol.sym"); // 输出符号表
     return 0;
 }

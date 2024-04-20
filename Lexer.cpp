@@ -1,8 +1,8 @@
 #include "Lexer.h"
 #include<string>
 #include<cctype>
+#include <fstream>
 using namespace lexer;
-
 
 
 // singleton here
@@ -184,16 +184,68 @@ Type::~Type() { ; }
 
 lexer::SymbolTable::SymbolTable()
 {
+    AddNewSymbol("KEYWORD", "bool");
+    AddNewSymbol("KEYWORD", "break");
+    AddNewSymbol("KEYWORD", "case");
+    AddNewSymbol("KEYWORD", "char");
+    AddNewSymbol("KEYWORD", "continue");
+    AddNewSymbol("KEYWORD", "do");
+    AddNewSymbol("KEYWORD", "else");
+    AddNewSymbol("KEYWORD", "float");
+    AddNewSymbol("KEYWORD", "for");
+    AddNewSymbol("KEYWORD", "if");
+    AddNewSymbol("KEYWORD", "int");
+    AddNewSymbol("KEYWORD", "return");
+    AddNewSymbol("KEYWORD", "switch");
+    AddNewSymbol("KEYWORD", "void");
+    AddNewSymbol("KEYWORD", "while");
+    AddNewSymbol("KEYWORD", "true");
+    AddNewSymbol("KEYWORD", "false");
 }
 
 lexer::SymbolTable::~SymbolTable()
 {
 }
 
-void lexer::SymbolTable::AddNewSymbol(Token t)
-{
+void SymbolTable::AddNewSymbol(const std::string& type, const std::string& name) {
+    // 检查是否有重复项
+    for (const auto& entry : table) {
+        if (entry.name == name) {
+            //std::cerr << "Error: Symbol '" << name << "' already exists in the symbol table." << std::endl;
+            return;
+        }
+    }
+
+    // 向符号表中添加新的符号项
+    SymbolEntry newEntry = { type,name };
+    table.push_back(newEntry);
 }
 
-void lexer::SymbolTable::OutputTable(std::string path)
-{
+void SymbolTable::OutputTable(const std::string& path) {
+    // 将符号表输出到指定路径的文件中
+    std::ofstream outFile(path);
+    if (!outFile.is_open()) {
+        std::cerr << "Error: Unable to open file for writing: " << path << std::endl;
+        return;
+    }
+    // 分类符号并按照类别输出
+    for (const auto& entry : table) {
+        if (entry.type == "KEYWORD" ) {
+            outFile << entry.type << "\t" << std::left << std::setw(10) << entry.name << std::endl;
+        }
+    }
+    for (const auto& entry : table) {
+        if (entry.type == "IDENTIFIER") {
+            outFile << entry.type << "\t" << std::left << std::setw(10) << entry.name << std::endl;
+        }
+    }
+    for (const auto& entry : table) {
+        if (entry.type == "NUMBER") {
+            outFile << entry.type << "\t" << std::left << std::setw(10) << entry.name << std::endl;
+        }
+    }
+
+    outFile.close();
+
+    std::cout << "Symbol table has been written to: " << path << std::endl;
 }
