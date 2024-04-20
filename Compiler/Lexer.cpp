@@ -73,7 +73,9 @@ Token* Lexer::Scan() {
     case '*':
         Readch(); return new Word(std::string(1, '*'), Tag::MULTIPLY);
     case '/':
-        Readch(); return new Word(std::string(1, '/'), Tag::DIVIDE);
+        if (Readch('/'))
+            while (!Readch('\n'));
+        else return new Word(std::string(1, '/'), Tag::DIVIDE);
     case '%':
         Readch(); return new Word(std::string(1, '%'), Tag::MODULO);
 
