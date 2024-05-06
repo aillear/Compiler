@@ -1,11 +1,13 @@
 #include "Lexer.h"
+#include "Parser.h"
 #include <fstream>
+
 #pragma warning(disable:4996) // 禁用警告 4996（_CRT_SECURE_NO_WARNINGS 相关的警告）
 
 using namespace lexer;
+using namespace parser;
 
-
-int main() {
+void static exe1() {
     FILE* fp;
     std::string fileName;
     std::cout << "input file name: " << std::endl;
@@ -49,5 +51,17 @@ int main() {
     outFile.close();
     std::cout << "Token list has been written to: sample.out" << std::endl;
     symbolTable.OutputTable("sample.sym"); // 输出符号表
+    return;
+}
+
+void static exe2() {
+
+}
+
+int main() {
+    GetGrammerList();
+    for (int i = 0; i < GetGrammerList().ruleList.size(); i++) {
+        std::cout << i << ": " << GetGrammerList().ruleList[i] << std::endl;
+    }
     return 0;
 }
