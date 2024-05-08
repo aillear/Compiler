@@ -43,7 +43,7 @@ GrammerList::GrammerList()
 			rightSides = first[1];
 		}
 		// 对一行进行拆分
-		std::vector<std::string> second = Split(rightSides, "|", Trim);
+		std::vector<std::string> second = Split(rightSides, "#", Trim);
 		for (std::string str : second) {
 			GrammerRule gr;
 			gr.left = left;
