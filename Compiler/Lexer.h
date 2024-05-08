@@ -1,13 +1,14 @@
 #pragma once
-#include<iostream>
-#include<unordered_map>
-#include<set>
-#include<vector>
-#include"Tag.h"
-#include <iomanip> 
+#include "Tag.h"
+#include <iomanip>
+#include <iostream>
+#include <set>
+#include <unordered_map>
+#include <vector>
 
-namespace lexer {
-	class Token 
+namespace lexer
+{
+	class Token // Token基类
 	{
 	public:
 		const int tag;
@@ -16,7 +17,7 @@ namespace lexer {
 		virtual std::string ToString();
 	};
 
-	class Num : public Token
+	class Num : public Token // 数字
 	{
 	public:
 		const int value;
@@ -25,7 +26,7 @@ namespace lexer {
 		std::string ToString() override;
 	};
 
-	class Real : public Token
+	class Real : public Token // 实数
 	{
 	public:
 		const double value;
@@ -34,7 +35,7 @@ namespace lexer {
 		std::string ToString() override;
 	};
 
-	class Word : public Token
+	class Word : public Token // 单词
 	{
 	public:
 		std::string lexeme;
@@ -43,7 +44,7 @@ namespace lexer {
 		std::string ToString() override;
 	};
 
-	class Type : public Word
+	class Type : public Word // 类型
 	{
 	public:
 		int width;
@@ -52,7 +53,8 @@ namespace lexer {
 	};
 
 	// 定义符号表项
-	struct SymbolEntry {
+	struct SymbolEntry
+	{
 		std::string type;
 		std::string name;
 	};
@@ -62,33 +64,35 @@ namespace lexer {
 	public:
 		SymbolTable();
 		~SymbolTable();
-		void AddNewSymbol(const std::string& type, const std::string& name);
-		void OutputTable(const std::string& path);
+		void AddNewSymbol(const std::string &type, const std::string &name);
+		void OutputTable(const std::string &path);
+
 	private:
 		std::vector<SymbolEntry> table;
 	};
 
-	class Lexer
+	class Lexer // 词法分析器
 	{
 	public:
 		// Singleton
-		static Lexer& Instance();
-		int line = 1;	// line 1
-		int row = 1;	// row 1
-		char peek = ' ';	//  space
+		static Lexer &Instance();
+		int line = 1;	 // line 1
+		int row = 1;	 // row 1
+		char peek = ' '; //  space
 		std::unordered_map<std::string, Word> words;
-		void SetFilePointer(FILE* _fp);
+		void SetFilePointer(FILE *_fp);
 		void Reverse(Word w);
 		void Readch();
 		bool Readch(char c);
-		Token* Scan();
-		FILE* fp;
+		Token *Scan();
+		FILE *fp;
+
 	private:
-		static Lexer* instance;
+		static Lexer *instance;
 		Lexer();
 		~Lexer();
 	};
 
 	// use this to get singleton
-	Lexer& GetLexer();
+	Lexer &GetLexer();
 }
