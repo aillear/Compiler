@@ -32,6 +32,6 @@
 *.app
 Compiler/x64
 .vs
-Debug/Compiler.pdb
-x64/Debug/Compiler.pdb
-x64/Debug/Compiler.pdb
+Debug
+x64
+
