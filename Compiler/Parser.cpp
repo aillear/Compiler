@@ -15,7 +15,7 @@ GrammerList& GrammerList::Instance()
 	}
 	return *instance;
 }
-GrammerRule parser::GrammerList::GetGR(int i)
+GrammerRule GrammerList::GetGR(int i)
 {
 	return ruleList[i];
 }
@@ -62,17 +62,15 @@ GrammerList::GrammerList()
 	head.count = 1;
 	ruleList.insert(ruleList.begin(), head);
 }
-
-parser::GrammerList::~GrammerList()
+GrammerList::~GrammerList()
 {
 }
-
 GrammerList& parser::GetGrammerList()
 {
 	return GrammerList::Instance();
 }
 
-bool parser::TableLine::GetPair(std::string v, std::pair<char, int> &p)
+bool TableLine::GetPair(std::string v, std::pair<char, int> &p)
 {
 	auto it = action_goto.find(v);
 	if (it != action_goto.end()) {
@@ -83,44 +81,44 @@ bool parser::TableLine::GetPair(std::string v, std::pair<char, int> &p)
 }
 
 // 生成一行
-parser::TableLine::TableLine()
+TableLine::TableLine()
 {
 	// todo
 }
 
-parser::TableLine::~TableLine()
+TableLine::~TableLine()
 {
 }
 
 // 生成表,从xx文件里读
-parser::AnalysisTable::AnalysisTable()
+AnalysisTable::AnalysisTable()
 {
 	// todo
 }
 
-parser::AnalysisTable::~AnalysisTable()
+AnalysisTable::~AnalysisTable()
 {
 }
 
 // 安全的
-bool parser::AnalysisTable::GetPair(int i, std::string v, std::pair<char, int> &p)
+bool AnalysisTable::GetPair(int i, std::string v, std::pair<char, int> &p)
 {
 	if (i >= table.size()) return false;
 	return table[i].GetPair(v, p);
 }
 
-parser::Parser* parser::Parser::instance = nullptr;
-parser::Parser::Parser()
+Parser* Parser::instance = nullptr;
+Parser::Parser()
 {
 	s.push(0);
 	token.push("END");
 }
 
-parser::Parser::~Parser()
+Parser::~Parser()
 {
 }
 
-Parser& parser::Parser::Instance()
+Parser& Parser::Instance()
 {
 	if (instance == nullptr) {
 		instance = new Parser();
@@ -128,7 +126,7 @@ Parser& parser::Parser::Instance()
 	return *instance;
 }
 
-bool parser::Parser::Analysis()
+bool Parser::Analysis()
 {
 	// 实现那个算法here
 	// 从 s 读取栈顶
@@ -139,3 +137,5 @@ bool parser::Parser::Analysis()
 
 	return false;
 }
+
+
