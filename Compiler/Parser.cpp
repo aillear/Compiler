@@ -3,6 +3,8 @@
 #include<iostream>
 #include<fstream>
 #include<string>
+#include <iomanip>
+#include <sstream>
 using namespace parser;
 using namespace util;
 
@@ -81,9 +83,47 @@ bool TableLine::GetPair(std::string v, std::pair<char, int> &p)
 }
 
 // 生成一行
-TableLine::TableLine()
+TableLine::TableLine(const std::vector<std::string>& fields, const std::vector<std::string>& headers)
 {
-	// todo
+	int column = 1; // 列数从1开始  
+	std::pair<char, int> grip;
+	for (const auto& field : fields) {
+		if (!field.empty()) {
+			int value = 0;
+			int len = field.length();
+			// 解析字段值  
+			if (field[0] == 'r' || field[0] == 's')	//终结符
+			{
+				grip.first = field[0];//字母 s or r
+				for (int i = 1; i < len; i++)
+				{
+					value = value * 10 + field[i] - '0';
+				}
+				grip.second = value;//数值
+			}
+			else if (field[0] == 'a')		//acc  
+			{
+				grip.first = 'a';//a
+				for (int i = 3; i < len; i++)
+				{
+					value = value * 10 + field[i] - '0';
+				}
+				grip.second = value;//0
+			}
+			else							//非终结符
+			{
+				grip.first = 'd';
+				for (int i = 0; i < len; i++)
+				{
+					value = value * 10 + field[i] - '0';
+				}
+				grip.second = value;
+			}
+			// 使用headers中的对应列名作为键  
+			action_goto[headers[column]] = std::make_pair(grip.first, grip.second);
+		}
+		column++;
+	}
 }
 
 TableLine::~TableLine()
@@ -93,8 +133,38 @@ TableLine::~TableLine()
 // 生成表,从xx文件里读
 AnalysisTable::AnalysisTable()
 {
-	// todo
+	std::ifstream file("Data.csv", std::ios::in);
+	if (!file) {
+		std::cout << "打开文件失败！" << std::endl;
+		std::exit(1);
+	}
+
+	std::string line;
+	std::getline(file, line); // 读取标题行  
+	std::istringstream iss(line);
+	std::string col;
+	std::vector<std::string> headers; // 用于存储标题行的所有字符
+
+	// 读取并存储标题行的所有字段  
+	while (std::getline(iss, col, ',')) {
+		headers.push_back(col);
+	}
+
+	while (std::getline(file, line)) {
+		std::istringstream iss(line);
+		std::vector<std::string> fields; // 用于存储当前行的所有字段  
+		std::string field;
+
+		// 读取当前行的所有字段  
+		while (std::getline(iss, field, ',')) {
+			fields.push_back(field);
+		}
+
+		// 使用当前行的字段和标题行的headers来创建一个新的TableLine对象  
+		table.push_back(TableLine(fields, headers));
+	}
 }
+
 
 AnalysisTable::~AnalysisTable()
 {

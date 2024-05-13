@@ -12,7 +12,7 @@ namespace parser {
 	public:
 		std::unordered_map<std::string, std::pair<char, int>> action_goto;
 		bool GetPair(std::string v, std::pair<char, int>& p);
-		TableLine();
+		TableLine(const std::vector<std::string>& fields, const std::vector<std::string>& headers);
 		~TableLine();
 
 	private:
