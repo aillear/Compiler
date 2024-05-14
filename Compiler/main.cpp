@@ -68,10 +68,18 @@ void static exe2() {
     std::cout << "------------------------------" << std::endl;
     GetLexer().SetFilePointer(fp);
     // GetAnalysisTable().PrintTable();
-    GetGrammarList().PrintList();
-    GetParser().Analysis();
+    // GetGrammarList().PrintList();
+    if (GetParser().Analysis() == false) {
+		std::cout << "Error occured." << std::endl;
+        for (const auto& e : GetParser().errorList) {
+			std::cout << e << std::endl;
+		}
+	}
+    else {
+		std::cout << "Syntax analysis completed." << std::endl;
+	}
+    return;
 }
-
 int main() {
     exe2();
     return 0;

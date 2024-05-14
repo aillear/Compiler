@@ -192,7 +192,17 @@ AnalysisTable::AnalysisTable()
 	{
 		headers.push_back(col);
 	}
-
+	int flag = 0;
+	for (auto s : headers)
+	{
+		if(flag == 0)
+			terminal.push_back(s);
+		else
+			nonterminal.push_back(s);
+		if (s == "$")
+			flag = 1;
+	}
+	
 	while (std::getline(file, line))
 	{
 		std::istringstream iss(line);
@@ -236,6 +246,19 @@ void parser::AnalysisTable::PrintTable()
 
 }
 
+std::vector<std::string> parser::AnalysisTable::GetGoto(int s)
+{
+	std::vector<std::string> res;
+	std::pair<char, int> p;
+	for (auto str : nonterminal) {
+		if (GetPair(s, str, p))
+		{
+			res.push_back(str);
+		}
+	}
+	return res;
+}
+
 Parser *Parser::instance = nullptr;
 Parser::Parser()
 {
@@ -262,6 +285,8 @@ Parser& parser::GetParser()
 {
 	return Parser::Instance();
 }
+
+
 
 void Parser::PrintStack()
 {
@@ -354,18 +379,26 @@ bool Parser::Analysis()
 			else if (p.first == 'a')
 			{
 				PrintStack();
-				std::cout << "accept" << std::endl;
+				if(err == 0)
+					std::cout << "accept" << std::endl;
 				flag = false;
 			}
 		}
-		else
+		else // 错误处理
 		{
 			std::cout << "error" << std::endl;
 			std::cout << GetLexer().line << " " << GetLexer().row << std::endl;
 			PrintStack();
 			std::cout << top << " " << state << "\n\n";
 			err++;
-			flag = false;
+			errorList.push_back(Error(GetLexer().line, GetLexer().row, "Syntax error, input symbol:" + top));
+			// flag = false;
+			ErrorHandle();
+			if (top == "$")
+			{
+				std::cout << "No way to handle error" << std::endl;
+				flag = false;
+			}
 		}
 	}
 	if(err)
@@ -373,8 +406,47 @@ bool Parser::Analysis()
 	return true;
 }
 
+int parser::Parser::ErrorHandle()
+{
+	std::vector<std::string> tmp;
+	s.pop();
+	while (!s.empty()) {
+		int t = s.top();
+		tmp = GetAnalysisTable().GetGoto(t);
+		if (tmp.size() > 0)
+			break;
+		s.pop();
+	}
+	if (s.empty())
+	{
+		PopInputStack();
+		s.push(0);
+		while (!token.empty())
+			token.pop();
+		token.push("$");
+		return 0;
+	}
+	while (top != "$")
+	{
+		PopInputStack();
+		for (std::string str : tmp)
+		{
+			if (GetFollowSet().isInSet(str, top)) {
+				std::pair<char, int> p;
+				GetAnalysisTable().GetPair(s.top(), str, p);
+				s.push(p.second);
+				return 1;
+			}
+		}
+	}
+	std::cout<<"No way to handle error"<<std::endl;
+	return 0;
+}
+
 void parser::Parser::PopInputStack()
 {
+	if (top == "$")
+		return;
 	lexer::Token* token_input = lexer::GetLexer().Scan();
 	std::string input;
 	if (token_input->tag == lexer::Tag::NUM)
@@ -388,4 +460,73 @@ void parser::Parser::PopInputStack()
 	else
 		input = token_input->ToString();
 	top = input;
+}
+
+
+
+
+parser::FollowSet *parser::FollowSet::instance = nullptr;
+parser::FollowSet::FollowSet()
+{
+	std::ifstream file("exe2/follow.txt");
+	if (!file)
+	{
+		std::cout << "打开文件失败" << std::endl;
+		exit(1);
+	}
+	std::string line;
+	while (std::getline(file, line))
+	{
+		std::vector<std::string> first = Split(line, "@", Trim);
+		std::string left = first[0];
+		std::vector<std::string> second = Split(first[1], " ", Trim);
+		for (std::string str : second)
+		{
+			followset[left].push_back(str);
+		}
+	}
+	file.close();
+}
+
+parser::FollowSet::~FollowSet()
+{
+}
+
+void parser::FollowSet::PrintSet()
+{
+	for (const auto& pair : followset)
+	{
+		std::cout << pair.first << ": ";
+		for (const auto& str : pair.second)
+		{
+			std::cout << str << ", ";
+		}
+		std::cout << std::endl;
+	}
+}
+
+FollowSet& parser::FollowSet::Instance()
+{
+	if (instance == nullptr)
+	{
+		instance = new FollowSet();
+	}
+	return *instance;
+}
+
+bool parser::FollowSet::isInSet(std::string un, std::string t)
+{
+	auto it = followset.find(un);
+	if (it != followset.end())
+	{
+		auto it2 = std::find(it->second.begin(), it->second.end(), t);
+		if (it2 != it->second.end())
+			return true;
+	}
+	return false;
+}
+
+FollowSet& parser::GetFollowSet()
+{
+	return FollowSet::Instance();
 }

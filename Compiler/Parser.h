@@ -25,11 +25,13 @@ namespace parser
 	public:
 		static AnalysisTable& Instance();
 		std::vector<TableLine> table;
+		std::vector<std::string> terminal;
+		std::vector<std::string> nonterminal;
 		AnalysisTable();
 		~AnalysisTable();
 		bool GetPair(int i, std::string v, std::pair<char, int> &p);
 		void PrintTable();
-
+		std::vector<std::string> GetGoto(int s);
 	private:
 		static AnalysisTable *instance;
 	};
@@ -65,6 +67,18 @@ namespace parser
 	};
 	GrammarList &GetGrammarList();
 
+	struct Error
+	{
+		int line, row;
+		std::string msg;
+		Error(int l, int r, std::string m) : line(l), row(r), msg(m) {}
+		friend std::ostream& operator<<(std::ostream& os, const Error& e)
+		{
+			os<< "ERROR: " << e.msg << " at (" << e.line << ", " << e.row << ")";
+			return os;
+		}
+	};
+
 	// 分析器
 	class Parser
 	{
@@ -73,10 +87,11 @@ namespace parser
 		std::stack<int> s;
 		std::stack<std::string> token; // 这里 $ 写作 END
 		std::string top;
+		std::vector<Error> errorList;
 		void PrintStack();
 		bool Analysis();
 		void PopInputStack();
-
+		int ErrorHandle();
 	private:
 		static Parser *instance;
 		Parser();
@@ -84,4 +99,17 @@ namespace parser
 	};
 	Parser& GetParser();
 
+	class FollowSet
+	{
+	public:
+		FollowSet();
+		~FollowSet();
+		std::unordered_map<std::string, std::vector<std::string>> followset;
+		void PrintSet();
+		static FollowSet &Instance();
+		bool isInSet(std::string un, std::string t);
+	private:
+		static FollowSet *instance;
+	};
+	FollowSet &GetFollowSet();
 }

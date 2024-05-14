@@ -1,0 +1,23 @@
+program' @ $
+program @ $
+block @ $ id if while for do break continue { } else
+decls @ id if while for do break continue { } float int
+decl @ id (  { }  ; float int  if while for do break continue ! - num real true false
+init @ ;
+array @ ;
+basic @ id
+stmts @ id { } if while for do break continue
+stmt @ id { }  if  else while for do break continue
+loc @ ) ;  [  =   || && ==  !=     <  <=  >=  >  +  -  *  /
+f_decl @  ! - ( id num real true false ;
+f_bool @ ;
+f_expr @ )
+bool @ ) ; ||
+join @ && ) ; || )
+equality @ == != &&  ) ; ||
+rel @ == != &&  ) ; ||
+sexpr @)  ; || &&  == !=  < <= >= >
+expr @ )  ; || &&  == !=  < <= >= > + -
+term @ ) ; || &&  == !=  < <= >= > + - * /
+unary @ ) ; || &&  == !=  < <= >= > + - * /
+factor @ ) ; || &&  == !=  < <= >= > + - * /
