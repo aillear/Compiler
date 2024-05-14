@@ -9,26 +9,33 @@
 using namespace parser;
 using namespace util;
 
-GrammerList *GrammerList::instance = nullptr;
-GrammerList &GrammerList::Instance()
+GrammarList *GrammarList::instance = nullptr;
+GrammarList &GrammarList::Instance()
 {
 	if (instance == nullptr)
 	{
-		instance = new GrammerList();
+		instance = new GrammarList();
 	}
 	return *instance;
 }
-GrammerRule GrammerList::GetGR(int i)
+GrammarRule GrammarList::GetGR(int i)
 {
 	return ruleList[i];
 }
-GrammerList::GrammerList()
+void parser::GrammarList::PrintList()
 {
-	std::ifstream file("exe2/grammartest.txt");
+	for (int i = 0; i < ruleList.size(); i++)
+	{
+		std::cout << i << " : " << ruleList[i] << "::" << ruleList[i].count << std::endl;
+	}
+}
+GrammarList::GrammarList()
+{
+	std::ifstream file("exe2/grammar.txt");
 	// 不进行差错处理了
 	if (!file.is_open())
 	{
-		std::cout << "opos!" << std::endl;
+		std::cout << "oops!" << std::endl;
 	}
 	std::string line;
 	std::string lastLeft = "null";
@@ -52,10 +59,10 @@ GrammerList::GrammerList()
 		std::vector<std::string> second = Split(rightSides, "#", Trim);
 		for (std::string str : second)
 		{
-			GrammerRule gr;
+			GrammarRule gr;
 			gr.left = left;
 			gr.right = str;
-			gr.count = Split(rightSides).size();
+			gr.count = Split(str, " ", Trim).size();
 			ruleList.push_back(gr);
 		}
 		lastLeft = left;
@@ -63,19 +70,19 @@ GrammerList::GrammerList()
 	file.close();
 
 	// 增广
-	GrammerRule head;
+	GrammarRule head;
 	head.left = ruleList[0].left + "\'";
 	head.right = ruleList[0].left;
 	head.count = 1;
 	ruleList.insert(ruleList.begin(), head);
 }
-GrammerList::~GrammerList()
+GrammarList::~GrammarList()
 {
 }
 
-GrammerList &parser::GetGrammerList()
+GrammarList &parser::GetGrammarList()
 {
-	return GrammerList::Instance();
+	return GrammarList::Instance();
 }
 
 
@@ -108,10 +115,15 @@ AnalysisTable& parser::GetAnalysisTable()
 // 生成一行
 TableLine::TableLine(const std::vector<std::string> &fields, const std::vector<std::string> &headers)
 {
+	bool flag = false;
 	int column = 1; // 列数从1开始
 	std::pair<char, int> grip;
 	for (const auto &field : fields)
 	{
+		if (!flag) {
+			flag = true;
+			continue;
+		}
 		if (!field.empty())
 		{
 			int value = 0;
@@ -135,7 +147,7 @@ TableLine::TableLine(const std::vector<std::string> &fields, const std::vector<s
 				}
 				grip.second = value; // 0
 			}
-			else if (field[0] == 'd')// 非终结符
+			else// 非终结符
 			{
 				grip.first = 'd';
 				for (int i = 0; i < len; i++)
@@ -144,8 +156,6 @@ TableLine::TableLine(const std::vector<std::string> &fields, const std::vector<s
 				}
 				grip.second = value;
 			}
-			else
-				continue;
 			// 使用headers中的对应列名作为键
 			action_goto[headers[column]] = std::make_pair(grip.first, grip.second);
 		}
@@ -211,11 +221,13 @@ bool AnalysisTable::GetPair(int i, std::string v, std::pair<char, int> &p)
 
 void parser::AnalysisTable::PrintTable()
 {
+	int statecnt = 0;
 	for (const auto& line : table)
 	{
+		std::cout << "State: " << statecnt++ << std::endl;
 		for (const auto& pair : line.action_goto)
 		{
-			std::cout << pair.first << ": " << pair.second.first << pair.second.second << std::endl;
+			std::cout << "  " << pair.first << ": " << pair.second.first << pair.second.second << std::endl;
 		}
 	}
 
@@ -265,69 +277,75 @@ void Parser::PrintStack()
 	std::cout << std::endl;
 }
 
+// 实现那个算法here
+// 从 s 读取栈顶
+// 符号栈就是 token
+// 从 Lexer的scan() 读取的 token的ToString() 作为输入
+// 文法已经读取到GrammarList了,也是单例可以直接用
 bool Parser::Analysis()
 {
-	// 实现那个算法here
-	// 从 s 读取栈顶
-	// 符号栈就是 token
-	// 从 Lexer的scan() 读取的 token的ToString() 作为输入
-	// 文法已经读取到GrammerList了,也是单例可以直接用
-	int state = s.top();
-	std::string input = top;
-	std::pair<char, int> p;
-	if (AnalysisTable::Instance().GetPair(state, input, p))
-	{
-		if (p.first == 's')
+	int err = 0;
+	bool flag = true;
+	while (flag) {
+		int state = s.top();
+		std::string input = top;
+		std::pair<char, int> p;
+		if (AnalysisTable::Instance().GetPair(state, input, p))
 		{
-			s.push(p.second);
-			token.push(input);
-			// 读取下一个输入
-			PopInputStack();
-			// 输出
-			PrintStack();
-			// for test
-			std::cout << "Shift " << p.second << std::endl;
-			// for prod
-			// std::cout << "Shift" << std::endl;
-		}
-		else if (p.first == 'r')
-		{
-			// 规约
-			GrammerRule gr = GetGrammerList().GetGR(p.second);
-			// 出栈
-			for (int i = 0; i < gr.count; i++)
+			if (p.first == 's')
 			{
-				s.pop();
-				token.pop();
+				PrintStack();
+				s.push(p.second);
+				token.push(input);
+				// 读取下一个输入
+				PopInputStack();
+				// for test
+				// std::cout << "Shift " << p.second << std::endl;
+				// for prod
+				std::cout << "Shift" << std::endl;
 			}
-			// 新的状态
-			std::pair<char, int> p2;
-			GetAnalysisTable().GetPair(s.top(), gr.left, p2);
-			s.push(p2.second);
-			token.push(gr.left);
-			// 输出
-			PrintStack();
-			std::cout << "Reduce by " << gr << std::endl;
+			else if (p.first == 'r')
+			{
+				PrintStack();
+				// 规约
+				GrammarRule gr = GetGrammarList().GetGR(p.second);
+				// 出栈
+				for (int i = 0; i < gr.count; i++)
+				{
+					s.pop();
+					token.pop();
+				}
+				// 新的状态
+				std::pair<char, int> p2;
+				GetAnalysisTable().GetPair(s.top(), gr.left, p2);
+				s.push(p2.second);
+				token.push(gr.left);
+
+				std::cout << "Reduce by " << gr << std::endl;
+			}
+			else if (p.first == 'd')
+			{
+				PrintStack();
+				s.push(p.second);
+				std::cout << "Goto " << p.second << std::endl;
+			}
+			else if (p.first == 'a')
+			{
+				PrintStack();
+				std::cout << "accept" << std::endl;
+				flag = false;
+			}
 		}
-		else if (p.first == 'd')
+		else // todo : 差错检测
 		{
-			s.push(p.second);
-			// 输出
-			PrintStack();
-			std::cout << "Goto " << p.second << std::endl;
-		}
-		else if (p.first == 'a')
-		{
-			std::cout << "accept" << std::endl;
-			return true;
+			std::cout << "error" << std::endl;
+			err = 1;
+			flag = false;
 		}
 	}
-	else // todo : 差错检测
-	{
-		std::cout << "error" << std::endl;
+	if(err)
 		return false;
-	}
-	return false;
+	return true;
 }
 
 void parser::Parser::PopInputStack()

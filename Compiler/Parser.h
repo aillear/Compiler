@@ -36,13 +36,13 @@ namespace parser
 	AnalysisTable& GetAnalysisTable();
 
 	// 一条语法规则
-	struct GrammerRule
+	struct GrammarRule
 	{
 		std::string left;  // 规约时移入这玩意
 		std::string right; // 输出结果(动作)
 		int count;		   // 只需要知道出栈的数量,上面的right用来输出结果
 		// 重载运算符,方便输出
-		friend std::ostream &operator<<(std::ostream &os, const GrammerRule &g)
+		friend std::ostream &operator<<(std::ostream &os, const GrammarRule &g)
 		{
 			os << g.left << " -> " << g.right;
 			return os;
@@ -51,19 +51,19 @@ namespace parser
 
 	// 语法集,自动增广过了
 	// 里面vector存的,index对应的就是序数
-	class GrammerList
+	class GrammarList
 	{
 	public:
-		static GrammerList &Instance();
-		std::vector<GrammerRule> ruleList;
-		GrammerRule GetGR(int i);
-
+		static GrammarList &Instance();
+		std::vector<GrammarRule> ruleList;
+		GrammarRule GetGR(int i);
+		void PrintList();
 	private:
-		static GrammerList *instance;
-		GrammerList();
-		~GrammerList();
+		static GrammarList *instance;
+		GrammarList();
+		~GrammarList();
 	};
-	GrammerList &GetGrammerList();
+	GrammarList &GetGrammarList();
 
 	// 分析器
 	class Parser

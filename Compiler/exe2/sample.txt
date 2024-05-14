@@ -1,1 +1,1 @@
-main + main * main
+id * id + id
