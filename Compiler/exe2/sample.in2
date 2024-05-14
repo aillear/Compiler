@@ -1,0 +1,19 @@
+int id()
+{
+    int id;
+    int id;
+    int id;
+    id = num+num*num;
+    id=num;
+    id=num;
+    while (true)
+    {
+	id=id+num;
+        if (id==id)
+	    break;
+	else if (id>id)
+	    id=id+num;
+	else
+	    id=id-num;
+    }
+}

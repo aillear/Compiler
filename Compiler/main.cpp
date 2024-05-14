@@ -67,9 +67,8 @@ void static exe2() {
     }
     std::cout << "------------------------------" << std::endl;
     GetLexer().SetFilePointer(fp);
-    //GetAnalysisTable().PrintTable();
-    //GetGrammarList().PrintList();
-    //while (!GetParser().Analysis());
+    // GetAnalysisTable().PrintTable();
+    GetGrammarList().PrintList();
     GetParser().Analysis();
 }
 

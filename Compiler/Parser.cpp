@@ -7,6 +7,7 @@
 #include <sstream>
 #include <string>
 using namespace parser;
+using namespace lexer;
 using namespace util;
 
 GrammarList *GrammarList::instance = nullptr;
@@ -63,6 +64,8 @@ GrammarList::GrammarList()
 			gr.left = left;
 			gr.right = str;
 			gr.count = Split(str, " ", Trim).size();
+			if(gr.right == "~")
+				gr.count = 0;
 			ruleList.push_back(gr);
 		}
 		lastLeft = left;
@@ -171,7 +174,7 @@ TableLine::~TableLine()
 // 生成表,从xx文件里读
 AnalysisTable::AnalysisTable()
 {
-	std::ifstream file("exe2/slr_test.csv", std::ios::in);
+	std::ifstream file("exe2/slr.csv", std::ios::in);
 	if (!file)
 	{
 		std::cout << "打开文件失败" << std::endl;
@@ -262,6 +265,7 @@ Parser& parser::GetParser()
 
 void Parser::PrintStack()
 {
+	std::cout<<"Token Stack: ";
 	std::stack<std::string> token2 = token;
 	std::vector<std::string> v;
 	while (!token2.empty())
@@ -275,6 +279,21 @@ void Parser::PrintStack()
 		std::cout << s << " ";
 	}
 	std::cout << std::endl;
+	std::cout<<"State Stack: ";
+	std::stack<int> s2 = s;
+	std::vector<int> v2;
+	while (!s2.empty())
+	{
+		v2.push_back(s2.top());
+		s2.pop();
+	}
+	std::reverse(v2.begin(), v2.end());
+	for (int i : v2)
+	{
+		std::cout << i << " ";
+	}
+	std::cout << std::endl;
+
 }
 
 // 实现那个算法here
@@ -300,9 +319,10 @@ bool Parser::Analysis()
 				// 读取下一个输入
 				PopInputStack();
 				// for test
-				// std::cout << "Shift " << p.second << std::endl;
+				std::cout << "Shift " << p.second << std::endl;
+				std::cout << top << " " <<  state << "\n\n";
 				// for prod
-				std::cout << "Shift" << std::endl;
+				// std::cout << "Shift" << std::endl;
 			}
 			else if (p.first == 'r')
 			{
@@ -322,12 +342,14 @@ bool Parser::Analysis()
 				token.push(gr.left);
 
 				std::cout << "Reduce by " << gr << std::endl;
+				std::cout << top << " " << state << "\n\n";
 			}
 			else if (p.first == 'd')
 			{
 				PrintStack();
 				s.push(p.second);
 				std::cout << "Goto " << p.second << std::endl;
+				std::cout << top << " " << state << "\n\n";
 			}
 			else if (p.first == 'a')
 			{
@@ -336,10 +358,13 @@ bool Parser::Analysis()
 				flag = false;
 			}
 		}
-		else // todo : 差错检测
+		else
 		{
 			std::cout << "error" << std::endl;
-			err = 1;
+			std::cout << GetLexer().line << " " << GetLexer().row << std::endl;
+			PrintStack();
+			std::cout << top << " " << state << "\n\n";
+			err++;
 			flag = false;
 		}
 	}

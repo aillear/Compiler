@@ -1,30 +1,30 @@
 program  @ basic id ( ) block
 block    @ { decls stmts }
 decls    @ decls decl # ~
-decl     @ type id ; # init
-init     @ type id = expr ; 
-type     @ type [ num ] # basic
+decl     @ basic id array ; # init;
+array    @ [ num ] array # ~
+init     @ basic id = expr ; 
 basic    @ float # int
 stmts    @ stmts stmt # ~
-stmt     @ id = expr ;
-           # loc = expr ;
+stmt     @   loc = expr ;
            # if ( bool ) stmt
            # if ( bool ) stmt else stmt
            # while ( bool ) stmt
-           # for ( f_decl ; f_bool ; f_expr ) stmt
+           # for ( f_decl f_bool ; f_expr) stmt
            # do stmt while ( bool ) ;
            # break ;
            # continue ;
            # block
 loc      @ loc [ num ] # id
-f_decl   @ decl # ~
+f_decl   @ decl # ;
 f_bool   @ bool # ~
 f_expr   @ expr # ~
 bool     @ bool || join # join
 join     @ join && equality # equality
 equality @ equality == rel  # equality != rel  # rel
-rel      @ expr < expr # expr <= expr # expr >= expr # expr > expr # expr
-expr     @ expr + term # expr - term #term
+rel      @ sexpr < expr # sexpr <= expr # sexpr >= expr # sexpr > expr # sexpr
+sexpr    @ expr
+expr     @ expr + term # expr - term # term
 term     @ term * unary # term / unary # unary
-unary    @ !unary # -unary # factor
-factor   @ ( expr ) # loc # id # num # real # true # false
+unary    @ ! unary # - unary # factor
+factor   @ ( expr ) # loc # num # real # true # false
