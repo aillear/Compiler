@@ -55,13 +55,23 @@ void static exe1() {
 }
 
 void static exe2() {
-
+    FILE* fp;
+    std::string fileName;
+    std::cout << "input file name: " << std::endl;
+    while (true)
+    {
+        std::cin >> fileName;
+        fp = fopen(fileName.c_str(), "r");
+        if (fp != NULL) break;
+        std::cout << "can't open file!" << std::endl;
+    }
+    std::cout << "------------------------------" << std::endl;
+    GetLexer().SetFilePointer(fp);
+    GetAnalysisTable().PrintTable();
+    while (!GetParser().Analysis());
 }
 
 int main() {
-    GetGrammerList();
-    for (int i = 0; i < GetGrammerList().ruleList.size(); i++) {
-        std::cout << i << ": " << GetGrammerList().ruleList[i] << std::endl;
-    }
+    exe2();
     return 0;
 }

@@ -1,9 +1,11 @@
 #pragma once
-#include<unordered_map>
-#include<string>
-namespace lexer {
-    enum Tag {
-        // 
+#include <string>
+#include <unordered_map>
+namespace lexer
+{
+    enum Tag
+    {
+        //
         UNDEFINED = 0,
         BOOL,
         BREAK,
@@ -22,39 +24,39 @@ namespace lexer {
         WHILE,
         TRUE,
         FALSE,
-        PLUS,        // +
-        MINUS,       // -
-        MULTIPLY,    // *
-        DIVIDE,      // /
-        MODULO,      // %
-        EQUALS,      // ==
-        NOT_EQUALS,  // !=
-        LESS_THAN,   // <
-        GREATER_THAN,// >
-        LESS_EQUAL,  // <=
-        GREATER_EQUAL,// >=
-        LOGICAL_AND, // &&
-        LOGICAL_OR,  // ||
-        LOGICAL_NOT, // !
-        BITWISE_AND, // &
-        BITWISE_OR,  // |
-        ASSIGN,      // =
-        INCREMENT,   // ++
-        DECREMENT,   // --
-        DOT,         // .
-        LEFT_PAREN,     // (
-        RIGHT_PAREN,    // )
-        LEFT_BRACKET,   // [
-        RIGHT_BRACKET,  // ]
-        LEFT_BRACE,     // {
-        RIGHT_BRACE,    // }
-        COMMA,          // ,
-        SEMICOLON,      // ;
-        NUM,         // 数字常量
-        REAL,        // 浮点常量
-        IDENTIFIER,  // id
-        END,         // end
-        KEYWORD,     // 关键词
+        PLUS,          // +
+        MINUS,         // -
+        MULTIPLY,      // *
+        DIVIDE,        // /
+        MODULO,        // %
+        EQUALS,        // ==
+        NOT_EQUALS,    // !=
+        LESS_THAN,     // <
+        GREATER_THAN,  // >
+        LESS_EQUAL,    // <=
+        GREATER_EQUAL, // >=
+        LOGICAL_AND,   // &&
+        LOGICAL_OR,    // ||
+        LOGICAL_NOT,   // !
+        BITWISE_AND,   // &
+        BITWISE_OR,    // |
+        ASSIGN,        // =
+        INCREMENT,     // ++
+        DECREMENT,     // --
+        DOT,           // .
+        LEFT_PAREN,    // (
+        RIGHT_PAREN,   // )
+        LEFT_BRACKET,  // [
+        RIGHT_BRACKET, // ]
+        LEFT_BRACE,    // {
+        RIGHT_BRACE,   // }
+        COMMA,         // ,
+        SEMICOLON,     // ;
+        NUM,           // 数字常量
+        REAL,          // 浮点常量
+        IDENTIFIER,    // id
+        END,           // end
+        KEYWORD,       // 关键词
     };
 
     static std::unordered_map<lexer::Tag, std::string> tagToString = {
@@ -108,11 +110,11 @@ namespace lexer {
         {lexer::Tag::REAL, "REAL"},
         {lexer::Tag::IDENTIFIER, "IDENTIFIER"},
         {lexer::Tag::END, "END"},
-        {lexer::Tag::KEYWORD, "KEYWORD"}
-    };
+        {lexer::Tag::KEYWORD, "KEYWORD"}};
 
     // tag 转为 str
-    inline std::string TagToString(lexer::Tag t) {
+    inline std::string TagToString(lexer::Tag t)
+    {
         return tagToString[t];
     }
 }
