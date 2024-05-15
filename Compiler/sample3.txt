@@ -1,0 +1,26 @@
+int main()
+{
+	int array[5];
+	int id;
+	int id;
+	array[0] = num;
+	id = array[0];
+	id = (a+b)*c;
+	do {  
+        		id = num+id;  		
+    	} while (id < num*num);
+    	while(true)
+   	{
+    		id=id+num;
+		if(id==id)
+			break;
+    		else if(id>id)
+			break;
+    		else
+			id=id-num;
+    	}
+	if(id==1 || id ==2)
+	{
+		id=3;
+	}
+}
