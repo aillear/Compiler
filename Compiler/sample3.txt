@@ -15,7 +15,7 @@ int main()
 		if(id==id)
 			break;
     		else if(id>id)
-			break;
+			continue;
     		else
 			id=id-num;
     	}
