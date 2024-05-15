@@ -159,6 +159,12 @@ Lexer::Lexer() {
     Reverse(Type("float", Tag::FLOAT, 8));
     Reverse(Type("bool", Tag::BOOL, 1));
     Reverse(Type("char", Tag::CHAR, 1));
+    Reverse(Word("continue", Tag::CONTINUE));
+    Reverse(Word("for", Tag::FOR));
+    Reverse(Word("switch", Tag::SWITCH));
+    Reverse(Word("case", Tag::CASE));
+    Reverse(Word("return", Tag::RETURN));
+    Reverse(Word("void", Tag::VOID));
 }
 Lexer::~Lexer() { ; }
 

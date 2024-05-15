@@ -1,7 +1,7 @@
 program  @ basic id ( ) block
 block    @ { decls stmts }
 decls    @ decls decl # ~
-decl     @ basic id array ; # init;
+decl     @ basic id array ; # init
 array    @ [ num ] array # ~
 init     @ basic id = expr ; 
 basic    @ float # int
@@ -10,7 +10,7 @@ stmt     @   loc = expr ;
            # if ( bool ) stmt
            # if ( bool ) stmt else stmt
            # while ( bool ) stmt
-           # for ( f_decl f_bool ; f_expr) stmt
+           # for ( f_decl f_bool ; f_expr ) stmt
            # do stmt while ( bool ) ;
            # break ;
            # continue ;

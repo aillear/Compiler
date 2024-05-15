@@ -88,8 +88,8 @@ namespace parser
 		std::stack<std::string> token; // 这里 $ 写作 END
 		std::string top;
 		std::vector<Error> errorList;
-		void PrintStack();
-		bool Analysis();
+		void PrintStack(std::ofstream& fp);
+		bool Analysis(std::ofstream &fp1, std::ofstream& fp2);
 		void PopInputStack();
 		int ErrorHandle();
 	private:

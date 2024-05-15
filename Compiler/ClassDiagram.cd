@@ -1,0 +1,116 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
+  <Class Name="lexer::Token" Collapsed="true">
+    <Position X="2.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAACAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAARAAA=</HashCode>
+      <FileName>Lexer.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="lexer::Num" Collapsed="true">
+    <Position X="0.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ICAAAAAAAAAAAAAEAAAAAAAAAAAAACAAAAAAAAAAAAA=</HashCode>
+      <FileName>Lexer.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="lexer::Real" Collapsed="true">
+    <Position X="2.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAEAAAAACAAAAAAACAAAAAAgAAAAAA=</HashCode>
+      <FileName>Lexer.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="lexer::Word" Collapsed="true">
+    <Position X="5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAAAAAAAAAAEAAAAAAAAAAAAAAAAACIAAAAAAAA=</HashCode>
+      <FileName>Lexer.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="lexer::Type">
+    <Position X="5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAQAAAAAAAgA=</HashCode>
+      <FileName>Lexer.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="lexer::SymbolTable">
+    <Position X="13.25" Y="3.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAIAAAAABAAAAQAAAAAAAAAACAAAAAAAAAAAI=</HashCode>
+      <FileName>Lexer.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="lexer::Lexer">
+    <Position X="0.5" Y="3.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAUAAAYAAAAAAAAAAAAAAABCAABAAAAAQDACAAAAAEA=</HashCode>
+      <FileName>Lexer.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="parser::TableLine">
+    <Position X="15.75" Y="1.5" Width="5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAACAAAAAAAAAAQAAAAAAAIAAAAAAAAAIA=</HashCode>
+      <FileName>Parser.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="parser::AnalysisTable">
+    <Position X="3.75" Y="6.75" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAABAAAQgAAAAEAhAAAAIUAAAAAAAQAA=</HashCode>
+      <FileName>Parser.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="parser::GrammarList">
+    <Position X="3.5" Y="10" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAIAAAAAAABAAAAARAEAAAAAAIA=</HashCode>
+      <FileName>Parser.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="parser::Parser">
+    <Position X="9.25" Y="1.5" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>AAEgAAAAIAAAAAAAAAAAAAgAFABAAAAAQIAABwAAAAA=</HashCode>
+      <FileName>Parser.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="parser::FollowSet">
+    <Position X="9.25" Y="7.5" Width="3.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAEAAgBAAAAAUIAAAAAAAAA=</HashCode>
+      <FileName>Parser.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="lexer::SymbolEntry">
+    <Position X="13.5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAFAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Lexer.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="parser::GrammarRule">
+    <Position X="9.5" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAABAAAAAAAAAAIAAAAAAAAAAAAgAA=</HashCode>
+      <FileName>Parser.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="parser::Error">
+    <Position X="13.25" Y="1.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAAAAAAAAQAAAAAAAAACAAAAAAAAAAQAAAAAAAA=</HashCode>
+      <FileName>Parser.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Enum Name="lexer::Tag" Collapsed="true">
+    <Position X="7.25" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AACFIgQCKgMEIAAgQMMgCACCgBkJIFgaIAAgYAAKAQg=</HashCode>
+      <FileName>Tag.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Microsoft YaHei UI" Size="9" />
+</ClassDiagram>

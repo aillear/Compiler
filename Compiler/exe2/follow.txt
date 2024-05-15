@@ -3,7 +3,7 @@ program @ $
 block @ $ id if while for do break continue { } else
 decls @ id if while for do break continue { } float int
 decl @ id (  { }  ; float int  if while for do break continue ! - num real true false
-init @ ;
+init @ id (  { }  ; float int  if while for do break continue ! - num real true false
 array @ ;
 basic @ id
 stmts @ id { } if while for do break continue

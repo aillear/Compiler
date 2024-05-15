@@ -288,9 +288,8 @@ Parser& parser::GetParser()
 
 
 
-void Parser::PrintStack()
+void Parser::PrintStack(std::ofstream& fp)
 {
-	std::cout<<"Token Stack: ";
 	std::stack<std::string> token2 = token;
 	std::vector<std::string> v;
 	while (!token2.empty())
@@ -301,10 +300,12 @@ void Parser::PrintStack()
 	std::reverse(v.begin(), v.end());
 	for (std::string s : v)
 	{
-		std::cout << s << " ";
+		fp << s << " ";
 	}
-	std::cout << std::endl;
-	std::cout<<"State Stack: ";
+	fp << std::endl;
+	
+	/*
+	std::cout << "State Stack: ";
 	std::stack<int> s2 = s;
 	std::vector<int> v2;
 	while (!s2.empty())
@@ -318,6 +319,7 @@ void Parser::PrintStack()
 		std::cout << i << " ";
 	}
 	std::cout << std::endl;
+	*/
 
 }
 
@@ -326,7 +328,7 @@ void Parser::PrintStack()
 // 符号栈就是 token
 // 从 Lexer的scan() 读取的 token的ToString() 作为输入
 // 文法已经读取到GrammarList了,也是单例可以直接用
-bool Parser::Analysis()
+bool Parser::Analysis(std::ofstream &outfile, std::ofstream& errfile)
 {
 	int err = 0;
 	bool flag = true;
@@ -338,20 +340,20 @@ bool Parser::Analysis()
 		{
 			if (p.first == 's')
 			{
-				PrintStack();
+				PrintStack(outfile);
 				s.push(p.second);
 				token.push(input);
 				// 读取下一个输入
 				PopInputStack();
 				// for test
-				std::cout << "Shift " << p.second << std::endl;
-				std::cout << top << " " <<  state << "\n\n";
+				// std::cout << "Shift " << p.second << std::endl;
+				// std::cout << top << " " <<  state << "\n\n";
 				// for prod
-				// std::cout << "Shift" << std::endl;
+				outfile << "Shift" << "\n\n";
 			}
 			else if (p.first == 'r')
 			{
-				PrintStack();
+				PrintStack(outfile);
 				// 规约
 				GrammarRule gr = GetGrammarList().GetGR(p.second);
 				// 出栈
@@ -366,37 +368,35 @@ bool Parser::Analysis()
 				s.push(p2.second);
 				token.push(gr.left);
 
-				std::cout << "Reduce by " << gr << std::endl;
-				std::cout << top << " " << state << "\n\n";
+				outfile << "Reduce by " << gr << "\n\n";
+				// std::cout << top << " " << state << "\n\n";
 			}
 			else if (p.first == 'd')
 			{
-				PrintStack();
+				// PrintStack(std::cout);
 				s.push(p.second);
-				std::cout << "Goto " << p.second << std::endl;
-				std::cout << top << " " << state << "\n\n";
+				// std::cout << "Goto " << p.second << std::endl;
+				// std::cout << top << " " << state << "\n\n";
 			}
 			else if (p.first == 'a')
 			{
-				PrintStack();
-				if(err == 0)
-					std::cout << "accept" << std::endl;
+				PrintStack(outfile);
+				outfile << "accept" << std::endl;
 				flag = false;
 			}
 		}
 		else // 错误处理
 		{
-			std::cout << "error" << std::endl;
-			std::cout << GetLexer().line << " " << GetLexer().row << std::endl;
-			PrintStack();
-			std::cout << top << " " << state << "\n\n";
+			errfile << "Error at (" << GetLexer().line << ", " << GetLexer().row << ")\nStack: \n";
+			PrintStack(errfile);
+			//std::cout << top << " " << state << "\n\n";
 			err++;
 			errorList.push_back(Error(GetLexer().line, GetLexer().row, "Syntax error, input symbol:" + top));
 			// flag = false;
 			ErrorHandle();
 			if (top == "$")
 			{
-				std::cout << "No way to handle error" << std::endl;
+				errfile << "No way to handle error" << std::endl;
 				flag = false;
 			}
 		}
@@ -439,7 +439,6 @@ int parser::Parser::ErrorHandle()
 			}
 		}
 	}
-	std::cout<<"No way to handle error"<<std::endl;
 	return 0;
 }
 

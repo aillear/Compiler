@@ -66,17 +66,29 @@ void static exe2() {
         std::cout << "can't open file!" << std::endl;
     }
     std::cout << "------------------------------" << std::endl;
+    // 输出文件
+    std::ofstream outFile1(fileName + ".out");
+    std::ofstream outFile2(fileName + ".err");
+    if (!outFile1.is_open()) {
+        std::cerr << "Error: Unable to open file for writing output file" << std::endl;
+        return;
+    }
+    if (!outFile2.is_open()) {
+        std::cerr << "Error: Unable to open file for writing err file" << std::endl;
+        return;
+    }
+
     GetLexer().SetFilePointer(fp);
     // GetAnalysisTable().PrintTable();
     // GetGrammarList().PrintList();
-    if (GetParser().Analysis() == false) {
-		std::cout << "Error occured." << std::endl;
+    if (GetParser().Analysis(outFile1, outFile2) == false) {
+        outFile1 << "\nError occured, please check " << fileName << ".err" << std::endl;
         for (const auto& e : GetParser().errorList) {
-			std::cout << e << std::endl;
+            outFile2 << e << std::endl;
 		}
 	}
     else {
-		std::cout << "Syntax analysis completed." << std::endl;
+        outFile1 << "Syntax analysis completed." << std::endl;
 	}
     return;
 }

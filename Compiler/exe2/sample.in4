@@ -1,7 +1,7 @@
 int main()
 {
 	int array[5];
-	int id;
+	float id = 1.22;
 	int id;
 	array[0] = num;
 	id = array[0];
@@ -9,16 +9,16 @@ int main()
 	do {  
         		id = num+id;  		
     	} while (id < num*num);
-    	while(true)
+    while(true)
    	{
-    		id=id+num;
+    	id=id+num;
 		if(id==id)
 			break;
-    		else if(id>id)
+		else if(id>id)
 			continue;
-    		else
+    	else
 			id=id-num;
-    	}
+    }
 	if(id==1 || id ==2)
 	{
 		id=3;

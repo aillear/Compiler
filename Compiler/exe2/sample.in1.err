@@ -1,0 +1,16 @@
+Error at (12, 10)
+Stack: 
+$ basic id ( ) { decls stmts while ( bool ) { decls stmts loc = expr + num 
+Error at (12, 15)
+Stack: 
+$ basic id ( ) { decls stmts while ( bool ) { decls stmts loc = expr 
+Error at (12, 19)
+Stack: 
+$ basic id ( ) { decls stmts while ( bool ) { decls stmts loc = expr 
+Error at (14, 4)
+Stack: 
+$ basic id ( ) { decls stmts while ( bool ) { decls stmts stmt 
+ERROR: Syntax error, input symbol:if at (12, 10)
+ERROR: Syntax error, input symbol:== at (12, 15)
+ERROR: Syntax error, input symbol:) at (12, 19)
+ERROR: Syntax error, input symbol:else at (14, 4)
