@@ -1,0 +1,62 @@
+block decls decl init type basic stmts stmt loc f_decl f_bool f_expr bool join equality rel expr term unary factor program
+( ) [ ] { } = == != < <= > >= + - * / ! id num real true false || && ; if else while for do break continue float int
+program→basic id ( ) block
+block→{ decls stmts }
+decls→decls decl
+decls→ε
+decl→type id ;
+decl→init
+init→type id = expr ;
+type→type [ num ]
+type→basic
+basic→float
+basic→int
+stmts→stmts stmt
+stmts→ε
+stmt→id = expr ;
+stmt→loc = expr ;
+stmt→if ( bool ) stmt
+stmt→if ( bool ) stmt else stmt
+stmt→while ( bool ) stmt
+stmt→for ( f_decl ; f_bool ; f_expr ) stmt
+stmt→do stmt while ( bool ) ;
+stmt→break ;
+stmt→continue ;
+stmt→block
+loc→loc [ num ]
+loc→id
+f_decl→decl
+f_decl→ε
+f_bool→bool
+f_bool→ε
+f_expr→expr
+f_expr→ε
+bool→bool || join
+bool→join
+join→join && equality
+join→equality
+equality→equality == rel
+equality→equality != rel
+equality→rel
+rel→expr < expr
+rel→expr <= expr
+rel→expr >= expr
+rel→expr > expr
+rel→expr
+expr→expr + term
+expr→expr - term
+expr→term
+term→term * unary
+term→term / unary
+term→unary
+unary→! unary
+unary→- unary
+unary→factor
+factor→( expr )
+factor→loc
+factor→id
+factor→num
+factor→real
+factor→true
+factor→false
+START: program

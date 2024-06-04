@@ -4,7 +4,6 @@
 #include<unordered_map>
 
 namespace util {
-	// 他写的好啊
 	// split
 	// 第三个参数可选,对字符串进行处理
 	std::vector<std::string> Split(const std::string& str, std::string ch = " ", std::string(*func)(const std::string&) = nullptr);

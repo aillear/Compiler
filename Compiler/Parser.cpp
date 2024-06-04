@@ -10,6 +10,7 @@ using namespace parser;
 using namespace lexer;
 using namespace util;
 
+# pragma region Class: GrammarList
 GrammarList *GrammarList::instance = nullptr;
 GrammarList &GrammarList::Instance()
 {
@@ -87,7 +88,9 @@ GrammarList &parser::GetGrammarList()
 {
 	return GrammarList::Instance();
 }
+#pragma endregion
 
+# pragma region Class: AnalysisTable
 
 bool TableLine::GetPair(std::string v, std::pair<char, int> &p)
 {
@@ -98,22 +101,6 @@ bool TableLine::GetPair(std::string v, std::pair<char, int> &p)
 		return true;
 	}
 	return false;
-}
-AnalysisTable* AnalysisTable::instance = nullptr;
-
-AnalysisTable& parser::AnalysisTable::Instance()
-{
-	if (instance == nullptr)
-	{
-		instance = new AnalysisTable();
-	}
-	return *instance;
-}
-
-
-AnalysisTable& parser::GetAnalysisTable()
-{
-	return AnalysisTable::Instance();
 }
 // 生成一行
 TableLine::TableLine(const std::vector<std::string> &fields, const std::vector<std::string> &headers)
@@ -165,12 +152,54 @@ TableLine::TableLine(const std::vector<std::string> &fields, const std::vector<s
 		column++;
 	}
 }
-
 TableLine::~TableLine()
 {
 }
 
+AnalysisTable* AnalysisTable::instance = nullptr;
+AnalysisTable& parser::AnalysisTable::Instance()
+{
+	if (instance == nullptr)
+	{
+		instance = new AnalysisTable();
+	}
+	return *instance;
+}
+AnalysisTable& parser::GetAnalysisTable()
+{
+	return AnalysisTable::Instance();
+}
+bool AnalysisTable::GetPair(int i, std::string v, std::pair<char, int>& p)
+{
+	if (i >= table.size())
+		return false;
+	return table[i].GetPair(v, p);
+}
+void parser::AnalysisTable::PrintTable()
+{
+	int statecnt = 0;
+	for (const auto& line : table)
+	{
+		std::cout << "State: " << statecnt++ << std::endl;
+		for (const auto& pair : line.action_goto)
+		{
+			std::cout << "  " << pair.first << ": " << pair.second.first << pair.second.second << std::endl;
+		}
+	}
 
+}
+std::vector<std::string> parser::AnalysisTable::GetGoto(int s)
+{
+	std::vector<std::string> res;
+	std::pair<char, int> p;
+	for (auto str : nonterminal) {
+		if (GetPair(s, str, p))
+		{
+			res.push_back(str);
+		}
+	}
+	return res;
+}
 // 生成表,从xx文件里读
 AnalysisTable::AnalysisTable()
 {
@@ -219,47 +248,15 @@ AnalysisTable::AnalysisTable()
 		table.push_back(TableLine(fields, headers));
 	}
 }
-
 AnalysisTable::~AnalysisTable()
 {
 }
 
-// 安全的
-bool AnalysisTable::GetPair(int i, std::string v, std::pair<char, int> &p)
-{
-	if (i >= table.size())
-		return false;
-	return table[i].GetPair(v, p);
-}
+#pragma endregion
 
-void parser::AnalysisTable::PrintTable()
-{
-	int statecnt = 0;
-	for (const auto& line : table)
-	{
-		std::cout << "State: " << statecnt++ << std::endl;
-		for (const auto& pair : line.action_goto)
-		{
-			std::cout << "  " << pair.first << ": " << pair.second.first << pair.second.second << std::endl;
-		}
-	}
+# pragma region Class: Parser
 
-}
-
-std::vector<std::string> parser::AnalysisTable::GetGoto(int s)
-{
-	std::vector<std::string> res;
-	std::pair<char, int> p;
-	for (auto str : nonterminal) {
-		if (GetPair(s, str, p))
-		{
-			res.push_back(str);
-		}
-	}
-	return res;
-}
-
-Parser *Parser::instance = nullptr;
+Parser* Parser::instance = nullptr;
 Parser::Parser()
 {
 	s.push(0);
@@ -267,12 +264,10 @@ Parser::Parser()
 	top = " ";
 	PopInputStack();
 }
-
 Parser::~Parser()
 {
 }
-
-Parser &Parser::Instance()
+Parser& Parser::Instance()
 {
 	if (instance == nullptr)
 	{
@@ -280,14 +275,10 @@ Parser &Parser::Instance()
 	}
 	return *instance;
 }
-
 Parser& parser::GetParser()
 {
 	return Parser::Instance();
 }
-
-
-
 void Parser::PrintStack(std::ofstream& fp)
 {
 	std::stack<std::string> token2 = token;
@@ -303,7 +294,7 @@ void Parser::PrintStack(std::ofstream& fp)
 		fp << s << " ";
 	}
 	fp << std::endl;
-	
+
 	/*
 	std::cout << "State Stack: ";
 	std::stack<int> s2 = s;
@@ -322,14 +313,13 @@ void Parser::PrintStack(std::ofstream& fp)
 	*/
 
 }
-
+bool Parser::Analysis(std::ofstream& outfile, std::ofstream& errfile)
+{
 // 实现那个算法here
 // 从 s 读取栈顶
 // 符号栈就是 token
 // 从 Lexer的scan() 读取的 token的ToString() 作为输入
 // 文法已经读取到GrammarList了,也是单例可以直接用
-bool Parser::Analysis(std::ofstream &outfile, std::ofstream& errfile)
-{
 	int err = 0;
 	bool flag = true;
 	while (flag) {
@@ -401,11 +391,10 @@ bool Parser::Analysis(std::ofstream &outfile, std::ofstream& errfile)
 			}
 		}
 	}
-	if(err)
+	if (err)
 		return false;
 	return true;
 }
-
 int parser::Parser::ErrorHandle()
 {
 	std::vector<std::string> tmp;
@@ -441,7 +430,6 @@ int parser::Parser::ErrorHandle()
 	}
 	return 0;
 }
-
 void parser::Parser::PopInputStack()
 {
 	if (top == "$")
@@ -461,10 +449,11 @@ void parser::Parser::PopInputStack()
 	top = input;
 }
 
+#pragma endregion
 
+# pragma region Class: FollowSet
 
-
-parser::FollowSet *parser::FollowSet::instance = nullptr;
+parser::FollowSet* parser::FollowSet::instance = nullptr;
 parser::FollowSet::FollowSet()
 {
 	std::ifstream file("exe2/follow.txt");
@@ -486,11 +475,9 @@ parser::FollowSet::FollowSet()
 	}
 	file.close();
 }
-
 parser::FollowSet::~FollowSet()
 {
 }
-
 void parser::FollowSet::PrintSet()
 {
 	for (const auto& pair : followset)
@@ -503,7 +490,6 @@ void parser::FollowSet::PrintSet()
 		std::cout << std::endl;
 	}
 }
-
 FollowSet& parser::FollowSet::Instance()
 {
 	if (instance == nullptr)
@@ -512,7 +498,6 @@ FollowSet& parser::FollowSet::Instance()
 	}
 	return *instance;
 }
-
 bool parser::FollowSet::isInSet(std::string un, std::string t)
 {
 	auto it = followset.find(un);
@@ -524,8 +509,9 @@ bool parser::FollowSet::isInSet(std::string un, std::string t)
 	}
 	return false;
 }
-
 FollowSet& parser::GetFollowSet()
 {
 	return FollowSet::Instance();
 }
+
+#pragma endregion
