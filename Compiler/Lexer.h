@@ -43,7 +43,7 @@ namespace lexer
 		~Word();
 		std::string ToString() override;
 	};
-
+	
 	class Type : public Word // 类型
 	{
 	public:
@@ -60,7 +60,7 @@ namespace lexer
 	};
 
 	class SymbolTable
-	{
+	{	
 	public:
 		SymbolTable();
 		~SymbolTable();
@@ -79,12 +79,14 @@ namespace lexer
 		int line = 1;	 // line 1
 		int row = 1;	 // row 1
 		char peek = ' '; //  space
+		Token* TopToken = nullptr;
 		std::unordered_map<std::string, Word> words;
 		void SetFilePointer(FILE *_fp);
 		void Reverse(Word w);
 		void Readch();
 		bool Readch(char c);
 		Token *Scan();
+		Token* FixedScan(); // scan and save current token to top
 		FILE *fp;
 
 	private:

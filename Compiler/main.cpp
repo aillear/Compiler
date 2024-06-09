@@ -92,6 +92,11 @@ void static exe2() {
 	}
     return;
 }
+
+void static exe3() {
+
+}
+
 int main() {
     exe2();
     return 0;

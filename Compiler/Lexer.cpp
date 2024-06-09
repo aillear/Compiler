@@ -73,8 +73,10 @@ Token* Lexer::Scan() {
     case '*':
         Readch(); return new Word(std::string(1, '*'), Tag::MULTIPLY);
     case '/':
-        if (Readch('/'))
+        if (Readch('/')) {
             while (!Readch('\n'));
+            return Scan();  // bug fixed
+        }
         else return new Word(std::string(1, '/'), Tag::DIVIDE);
     case '%':
         Readch(); return new Word(std::string(1, '%'), Tag::MODULO);
@@ -144,7 +146,12 @@ Token* Lexer::Scan() {
     char ch = peek;
     Readch();
     return new Word(std::string(1, ch), Tag::UNDEFINED);
+}
 
+Token* lexer::Lexer::FixedScan()
+{
+    TopToken = Scan();
+    return TopToken;
 }
 
 Lexer::Lexer() { 

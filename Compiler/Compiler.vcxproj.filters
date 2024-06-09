@@ -16,6 +16,9 @@
     <Filter Include="exe2">
       <UniqueIdentifier>{54a19a99-6574-4b01-8204-495ebc97fc09}</UniqueIdentifier>
     </Filter>
+    <Filter Include="exe3">
+      <UniqueIdentifier>{40f20c4c-0f02-4935-84bc-4a89ad2557f1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Lexer.h">
@@ -28,6 +31,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Utils.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SemanticAnalyzer.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -48,6 +54,9 @@
   <ItemGroup>
     <Text Include="exe2\grammar.txt">
       <Filter>exe2</Filter>
+    </Text>
+    <Text Include="exe3\grammar.txt">
+      <Filter>exe3</Filter>
     </Text>
   </ItemGroup>
   <ItemGroup>

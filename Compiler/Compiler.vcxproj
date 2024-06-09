@@ -129,6 +129,7 @@
   <ItemGroup>
     <ClInclude Include="Lexer.h" />
     <ClInclude Include="Parser.h" />
+    <ClInclude Include="SemanticAnalyzer.h" />
     <ClInclude Include="Tag.h" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>
@@ -140,6 +141,7 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="exe2\grammar.txt" />
+    <Text Include="exe3\grammar.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />

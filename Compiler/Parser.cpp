@@ -434,7 +434,7 @@ void parser::Parser::PopInputStack()
 {
 	if (top == "$")
 		return;
-	lexer::Token* token_input = lexer::GetLexer().Scan();
+	lexer::Token* token_input = lexer::GetLexer().FixedScan();
 	std::string input;
 	if (token_input->tag == lexer::Tag::NUM)
 		input = "num";

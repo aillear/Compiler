@@ -1,35 +1,26 @@
-/* Program */
-program  → basic id ( ) block
-block    → { decls stmts }
-
-/* Declaration */
-decls    → decls decl | ε
-decl     → type id ;
-type     → type [ num ] | basic
-basic    → float | int
-
-/* Statement */
-stmts    → stmts stmt | ε
-stmt     → var = expr ;
-           | if ( bool ) stmt
-           | if ( bool ) stmt else stmt
-           | while ( bool ) stmt
-           | do stmt while ( bool ) ;
-           | break ;
-           | block
-var → var [ num ] | id
-
-/* Condition Expressions */
-bool     → bool || join | join
-join     → join && equality | equality
-equality → expr rel expr
-rel      → < | > | == | != | <= | >=
-
-/* Arithmetic Expressions */
-expr     → expr1 opa term | term
-term     → temr1 opb unary | unary
-unary    → opc unary | factor
-factor   → ( expr ) | var | num | real | true | false
-opa      → + | -
-opb      → * | /
-opc      → ! | -
+program  @ basic id ( ) block
+block    @ { decls stmts }
+decls    @ decls decl # ε
+decl     @ type id ;
+type     @ type [ num ] # basic
+basic    @ float # int
+stmts    @ stmts stmt # ε
+stmt     @ var = expr ;
+           # if ( bool ) stmt
+           # if ( bool ) stmt else stmt
+           # while ( bool ) stmt
+           # do stmt while ( bool ) ;
+           # break ;
+           # block
+var      @ var [ num ] # id
+bool     @ bool || join # join
+join     @ join && equality # equality
+equality @ expr rel expr
+rel      @ < # > # == # != # <= # >=
+expr     @ expr1 opa term # term
+term     @ temr1 opb unary # unary
+unary    @ opc unary # factor
+factor   @ ( expr ) # var # num # real # true # false
+opa      @ + # -
+opb      @ * # /
+opc      @ ! # -
