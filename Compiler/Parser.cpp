@@ -31,6 +31,10 @@ void parser::GrammarList::PrintList()
 		std::cout << i << " : " << ruleList[i] << "::" << ruleList[i].count << std::endl;
 	}
 }
+std::vector<parser::GrammarRule> parser::GrammarList::GetRules() const
+{
+	return ruleList;
+}
 GrammarList::GrammarList()
 {
 	std::ifstream file("exe2/grammar.txt");
@@ -222,7 +226,7 @@ AnalysisTable::AnalysisTable()
 		headers.push_back(col);
 	}
 	int flag = 0;
-	for (auto s : headers)
+	for (std::string s : headers)
 	{
 		if(flag == 0)
 			terminal.push_back(s);
@@ -254,7 +258,18 @@ AnalysisTable::~AnalysisTable()
 
 #pragma endregion
 
-# pragma region Class: Parser
+std::vector<std::string> parser::AnalysisTable::GetGoto(int s)
+{
+	std::vector<std::string> res;
+	std::pair<char, int> p;
+	for (std::string str : nonterminal) {
+		if (GetPair(s, str, p))
+		{
+			res.push_back(str);
+		}
+	}
+	return res;
+}
 
 Parser* Parser::instance = nullptr;
 Parser::Parser()
@@ -444,6 +459,8 @@ void parser::Parser::PopInputStack()
 		input = "id";
 	else if (token_input->tag == lexer::Tag::END)
 		input = "$";
+	else if (token_input->tag == lexer::Tag::UNDEFINED)
+		input = "undefined";
 	else
 		input = token_input->ToString();
 	top = input;

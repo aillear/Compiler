@@ -10,4 +10,6 @@ namespace util {
 
 	// 字符串去空格
 	std::string Trim(const std::string& str);
+
+	void slrTransform();
 }

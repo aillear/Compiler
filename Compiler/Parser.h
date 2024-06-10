@@ -44,11 +44,21 @@ namespace parser
 		std::string right; // 输出结果(动作)
 		int count;		   // 只需要知道出栈的数量,上面的right用来输出结果
 		// 重载运算符,方便输出
+		friend bool operator==(const GrammarRule& g1, const GrammarRule& g2)
+		{
+			std::string r1 = g1.right, r2 = g2.right;
+			r1.erase(std::remove(r1.begin(), r1.end(), ' '), r1.end());
+			r2.erase(std::remove(r2.begin(), r2.end(), ' '), r2.end());
+			return g1.left == g2.left && r1 == r2;
+		}
+
 		friend std::ostream &operator<<(std::ostream &os, const GrammarRule &g)
 		{
 			os << g.left << " -> " << g.right;
 			return os;
 		}
+		GrammarRule() : left(""), right(""), count(0) {}
+		GrammarRule(std::string l, std::string r, int c) : left(l), right(r), count(c) {}
 	};
 
 	// 语法集,自动增广过了
@@ -60,6 +70,7 @@ namespace parser
 		std::vector<GrammarRule> ruleList;
 		GrammarRule GetGR(int i);
 		void PrintList();
+		std::vector<GrammarRule> GetRules() const;
 	private:
 		static GrammarList *instance;
 		GrammarList();

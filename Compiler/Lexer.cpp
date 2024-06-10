@@ -38,6 +38,7 @@ void Lexer::Reverse(Word w) {
 
 
 Token* Lexer::Scan() {
+L1:
     // 处理空行
     for (;; Readch()) {
         row++;
@@ -65,11 +66,11 @@ Token* Lexer::Scan() {
         if (Readch('=')) return new Word("<=", Tag::LESS_EQUAL); else return new Word(std::string(1, '<'), Tag::LESS_THAN);
     case '>':
         if (Readch('=')) return new Word(">=", Tag::GREATER_EQUAL); else return new Word(std::string(1, '>'), Tag::GREATER_THAN);
-    
+
     case '+':
         if (Readch('+')) return new Word("++", Tag::INCREMENT); else return new Word(std::string(1, '+'), Tag::PLUS);
     case '-':
-        if (Readch('-')) return new Word("--", Tag::DECREMENT); else return new Word(std::string(1, '+'), Tag::MINUS);
+        if (Readch('-')) return new Word("--", Tag::DECREMENT); else return new Word(std::string(1, '-'), Tag::MINUS);
     case '*':
         Readch(); return new Word(std::string(1, '*'), Tag::MULTIPLY);
     case '/':
@@ -80,7 +81,6 @@ Token* Lexer::Scan() {
         else return new Word(std::string(1, '/'), Tag::DIVIDE);
     case '%':
         Readch(); return new Word(std::string(1, '%'), Tag::MODULO);
-
     case '(':
         Readch(); return new Word(std::string(1, '('), Tag::LEFT_PAREN);
     case ')':
@@ -249,21 +249,21 @@ void SymbolTable::OutputTable(const std::string& path) {
     }
     // 只要identifier
     // 分类符号并按照类别输出
-   /* for (const auto& entry : table) {
+    for (const auto& entry : table) {
         if (entry.type == "KEYWORD" ) {
             outFile << entry.type << "\t" << std::left << std::setw(10) << entry.name << std::endl;
         }
-    }*/
+    }
     for (const auto& entry : table) {
         if (entry.type == "IDENTIFIER") {
             outFile << entry.type << "\t" << std::left << std::setw(10) << entry.name << std::endl;
         }
     }
-    //for (const auto& entry : table) {
-    //    if (entry.type == "NUMBER") {
-    //        outFile << entry.type << "\t" << std::left << std::setw(10) << entry.name << std::endl;
-    //    }
-    //}
+    for (const auto& entry : table) {
+        if (entry.type == "NUMBER") {
+            outFile << entry.type << "\t" << std::left << std::setw(10) << entry.name << std::endl;
+        }
+    }
 
     outFile.close();
 

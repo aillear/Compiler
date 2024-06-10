@@ -77,7 +77,6 @@ void static exe2() {
         std::cerr << "Error: Unable to open file for writing err file" << std::endl;
         return;
     }
-
     GetLexer().SetFilePointer(fp);
     // GetAnalysisTable().PrintTable();
     // GetGrammarList().PrintList();
@@ -86,18 +85,20 @@ void static exe2() {
         for (const auto& e : GetParser().errorList) {
             outFile2 << e << std::endl;
 		}
+        std::cout << "Analysis list has been written to: " << fileName << ".out" << std::endl;
+        std::cout << "Error list has been written to: " << fileName << ".err" << std::endl;
 	}
     else {
         outFile1 << "Syntax analysis completed." << std::endl;
+        std::cout << "Analysis list has been written to: " << fileName << ".out" << std::endl;
 	}
     return;
 }
 
 void static exe3() {
-
 }
 
 int main() {
-    exe2();
+    exe3();
     return 0;
 }
