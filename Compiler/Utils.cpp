@@ -6,21 +6,22 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+using namespace std;
 
-std::vector<std::string> util::Split(const std::string& str, std::string ch, std::string(*func)(const std::string&))
+vector<string> util::Split(const string& str, string ch, string(*func)(const string&))
 {
 	//以 ch 为分割字符，把 cstr 分割为多个元素存到vector
-	std::vector<std::string> ret;
+	vector<string> ret;
 	size_t pos = 0;
 	size_t start = 0;
-	while ((pos = str.find(ch, start)) != std::string::npos)
+	while ((pos = str.find(ch, start)) != string::npos)
 	{
 		if (pos > start) {
 			if (func == nullptr) {
 				ret.push_back(str.substr(start, pos - start));
 			}
 			else {
-				//std::cout << '-' << func(str.substr(start, pos - start)) << '-' << std::endl;
+				//cout << '-' << func(str.substr(start, pos - start)) << '-' << endl;
 				ret.push_back(func(str.substr(start, pos - start)));
 			}
 		}
@@ -31,18 +32,18 @@ std::vector<std::string> util::Split(const std::string& str, std::string ch, std
 			ret.push_back(str.substr(start));
 		}
 		else {
-			//std::cout << '-' << func(str.substr(start)) << '-' << std::endl;
+			//cout << '-' << func(str.substr(start)) << '-' << endl;
 			ret.push_back(func(str.substr(start)));
 		}
 	}
 	return ret;
 }
 
-std::string util::Trim(const std::string& str)
+string util::Trim(const string& str)
 {
 	size_t start = str.find_first_not_of(" \t\n\r");
 
-	if (start == std::string::npos) {
+	if (start == string::npos) {
 		return "";
 	}
 
@@ -50,102 +51,98 @@ std::string util::Trim(const std::string& str)
 	return str.substr(start, end - start + 1);
 }
 
+/*
+* slr_original中，箭头替换成@，epsilon替换成~
+* 依照grammer.txt解析，目前是exe2的版本
+*/
 void util::slrTransform()
 {
-	std::ifstream file("exe3/slr_original.csv", std::ios::in);
-	/*
-	* csv format:
-	* 1. header line: state, nonterminal...(ACTION), $ , terminal...(GOTO)
-	* 2. task: transform "Shift xx" in ACTION to "sxx", "Reduce xx" to "rxx", "Shift xx" in GOTO to "xx"
-	*/
-	std::string line;
-	std::vector<std::string> headers;
-	std::vector<std::string> terminals;
-	std::vector<std::string> nonterminals;
-	std::vector<std::vector<std::pair<char, int>>> action;
-	std::vector<std::vector<int>> gotoTable;
-	std::vector<parser::GrammarRule> grammarRules;
-	grammarRules = parser::GetGrammarList().Instance().GetRules();
-	// read header
-	std::getline(file, line);
-	headers = util::Split(line, ",", nullptr);
-	for (int i = 1; i < headers.size(); i++) {
-		if (headers[i] == "$") {
-			break;
+	vector<vector<string>> data = ReadCSV("exe3/slr_original.csv");
+	vector<string> header = data[0];
+	int flag = 1, tcnt = 0, ntcnt = 0;
+	for (int i = 0; i < header.size(); ++i)
+	{
+		if (flag)
+			ntcnt++;
+		else
+			tcnt++;
+		if (header[i] == "$")
+		{
+			flag = 0;
+			continue;
 		}
-		nonterminals.push_back(headers[i]);
 	}
-	for (int i = nonterminals.size() + 1; i < headers.size(); i++) {
-		terminals.push_back(headers[i]);
-	}
-	int action_size = nonterminals.size();
-	// read table
-	while (std::getline(file, line)) {
-		std::vector<std::string> fields = util::Split(line, ",", nullptr);
-		std::vector<std::pair<char, int>> actionLine;
-		std::vector<int> gotoLine;
-		for (int i = 1; i < action_size; i++) {
-			if (fields[i] == "") {
-				actionLine.push_back(std::make_pair(' ', -1));
+	vector<parser::GrammarRule> rules = parser::GetGrammarList().Instance().GetRules();
+	for (int i = 1; i < data.size(); ++i)
+	{
+		for (int j = 1; j < ntcnt; ++j)
+		{
+			if (data[i][j][0] == 'S')
+			{
+				data[i][j] = "s" + data[i][j].substr(6);
 			}
-			else if (fields[i].find("Shift") != std::string::npos) {
-				actionLine.push_back(std::make_pair('s', std::stoi(fields[i].substr(6))));
+			else if (data[i][j][0] == 'A')
+			{
+				data[i][j] = "acc";
 			}
-			else {
-				std::vector<std::string> production = util::Split(fields[i], "@", nullptr);
-				parser::GrammarRule prod = parser::GrammarRule(production[0], production[1], 0);
-				int cnt = 0;
-				for (parser::GrammarRule rule:grammarRules)
+			else if (!data[i][j].empty())
+			{
+				vector<string> tmp = util::Split(data[i][j], "@");
+				parser::GrammarRule prod = parser::GrammarRule(tmp[0], tmp[1], 0);
+				for (auto k = rules.begin(); k != rules.end(); ++k)
 				{
-					cnt++;
-					if (rule == prod) {
-						actionLine.push_back(std::make_pair('r', cnt));
+					if (*k == prod)
+					{
+						data[i][j] = "r" + to_string(k - rules.begin());
+						break;
 					}
 				}
 			}
 		}
-		action.push_back(actionLine);
-		for (int i = action_size + 1; i < fields.size(); i++) {
-			if (fields[i] == "") {
-				gotoLine.push_back(-1);
-			}
-			else {
-				gotoLine.push_back(std::stoi(fields[i].substr(6)));
+		for (int j = ntcnt; j < data[i].size(); ++j)
+		{
+			if (data[i][j][0] == 'S')
+			{
+				data[i][j] = data[i][j].substr(6);
 			}
 		}
-		gotoTable.push_back(gotoLine);
+	}
+	// write to slr.csv
+	ofstream file("exe3/slr.csv");
+	if (!file.is_open()) throw runtime_error("Could not open file");
+	for (const auto& row : data)
+	{
+		for (const auto& col : row)
+		{
+			file << col << ',';
+		}
+		file << endl;
+	}
+	file.close();
+}
+
+vector<vector<string>> util::ReadCSV(const string& filename) {
+	vector<vector<string>> data;
+	ifstream file(filename);
+	string line;
+	int flag = 0;
+	if (!file.is_open()) throw runtime_error("Could not open file");
+	while (getline(file, line)) {
+		if (!flag)
+		{
+			line = line.substr(3);
+			flag = 1;
+		}
+		stringstream ss(line);
+		vector<string> row;
+		string value;
+
+		while (getline(ss, value, ',')) {
+			row.push_back(value);
+		}
+		data.push_back(row);
 	}
 
-	// save table to slr.csv
-	std::ofstream outFile("exe3/slr.csv");
-	outFile << "state,";
-	for (std::string nonterminal : nonterminals) {
-		outFile << nonterminal << ",";
-	}
-	outFile << "$,";
-	for (std::string terminal : terminals) {
-		outFile << terminal << ",";
-	}
-    outFile << std::endl;
-	for (int i = 0; i < action.size(); i++) {
-		outFile << i << ",";
-		for (std::pair<char, int> act : action[i]) {
-			if (act.second == -1) {
-				outFile << ",";
-			}
-			else {
-				outFile << act.first << act.second << ",";
-			}
-		}
-		for (int j = 0; j < gotoTable[i].size(); j++) {
-			if (gotoTable[i][j] == -1) {
-				outFile << ",";
-			}
-			else {
-				outFile << gotoTable[i][j] << ",";
-			}
-		}
-		outFile << std::endl;
-	}
-	outFile.close();
+	file.close();
+	return data;
 }

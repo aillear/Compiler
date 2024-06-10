@@ -196,7 +196,7 @@ std::vector<std::string> parser::AnalysisTable::GetGoto(int s)
 {
 	std::vector<std::string> res;
 	std::pair<char, int> p;
-	for (auto str : nonterminal) {
+	for (std::string str : nonterminal) {
 		if (GetPair(s, str, p))
 		{
 			res.push_back(str);
@@ -257,19 +257,6 @@ AnalysisTable::~AnalysisTable()
 }
 
 #pragma endregion
-
-std::vector<std::string> parser::AnalysisTable::GetGoto(int s)
-{
-	std::vector<std::string> res;
-	std::pair<char, int> p;
-	for (std::string str : nonterminal) {
-		if (GetPair(s, str, p))
-		{
-			res.push_back(str);
-		}
-	}
-	return res;
-}
 
 Parser* Parser::instance = nullptr;
 Parser::Parser()
