@@ -2,6 +2,7 @@
 #include "Parser.h"
 #include <fstream>
 #include "Utils.h"
+#include <format>
 #include "SemanticAnalyzer.h"
 #pragma warning(disable:4996) // 禁用警告 4996（_CRT_SECURE_NO_WARNINGS 相关的警告）
 
@@ -97,24 +98,49 @@ void static exe2() {
 }
 
 void static exe3() {
-    util::slrTransform();
+    FILE* fp;
+    std::string fileName = "exe3/sample.txt";
+    std::cout << "input file name: " << std::endl;
+    while (true)
+    {
+        //std::cin >> fileName;
+        fp = fopen(fileName.c_str(), "r");
+        if (fp != NULL) break;
+        std::cout << "can't open file!" << std::endl;
+    }
+    std::string partfileName = util::Split(fileName, ".")[0];
+    std::cout << "------------------------------" << std::endl;
+    // 输出文件
+    GetLexer().SetFilePointer(fp);
+    std::ofstream outFile1 = std::ofstream("exe2/sample.out");
+    std::ofstream outFile2 = std::ofstream("exe2/sample.err");
+    if (GetParser().Analysis(outFile1, outFile2) == false)
+    {
+        std::cout << "Error occured!";
+		return;
+    }
+    outFile1 = std::ofstream("exe3/sample.out");
+    std::ofstream truncateFile("exe3/sample.err", std::ios::trunc);
+    truncateFile.close();
+    fp = fopen(fileName.c_str(), "r");
+    GetLexer().SetFilePointer(fp);
+    GetSemanticAnalyzer().analysis();
+    GetSemanticAnalyzer().output(outFile1);
+    if (GetSemanticAnalyzer().hasError == true) {
+
+        outFile1 << "\nError occured, please check " << partfileName << ".err" << std::endl;
+        std::cout << "Analysis list has been written to: " << partfileName << ".out" << std::endl;
+        std::cout << "Error list has been written to: " << partfileName << ".err" << std::endl;
+    }
+    else {
+        outFile1 << "Semantic analysis completed." << std::endl;
+        std::cout << "Analysis list has been written to: " << partfileName << ".out" << std::endl;
+    }
+    outFile1.close();
+    return;
 }
 
-void f(SymbolType* t) {
-    if (t == nullptr) return;
-    std::cout << t->baseType << " " << t->width << " " << t->isArray << std::endl;
-    f(t->subArrayType);
-}
-void static test() {
-    std::stack<int> a;
-    a.push(5);
-    a.push(4);
-    a.push(3);
-    SymbolType* t = GetSemanticAnalyzer().createType("int", a);
-    f(t);
-    std::cout << GetSemanticAnalyzer().CheckOutOfIndex(t->subArrayType, 3) << std::endl;
-}
 int main() {
-    test();
+    exe3();
     return 0;
 }

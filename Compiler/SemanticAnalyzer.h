@@ -6,6 +6,7 @@
 #include<map>
 #include<unordered_map>
 #include<stack>
+#include<fstream>
 
 namespace semanticAnalyzer {
 
@@ -22,7 +23,7 @@ namespace semanticAnalyzer {
 	{
 	public:
 		std::string lexval;
-		Terminal(std::string le, std::string tv) : NoteBase(false, tv), lexval(lexval) { ; }
+		Terminal(std::string tv, std::string le) : NoteBase(false, tv), lexval(le) { ; }
 		Terminal(std::string tv) : NoteBase(false, tv), lexval("") { ; }
 	private:
 		  
@@ -57,7 +58,7 @@ namespace semanticAnalyzer {
 		std::unordered_map<std::string, SymbolType*> table;
 		SymbolTable(SymbolTable* father = nullptr) : fatherTable(father) {}
 		~SymbolTable() {
-			delete fatherTable;
+			fatherTable = nullptr;
 			for (auto& pair : table) {
 				delete pair.second;
 			}
@@ -67,7 +68,7 @@ namespace semanticAnalyzer {
 			table[name] = type;
 		}
 		// 从当前符号表查找某个符号
-		bool lookup(const std::string& name, SymbolType* outType) {
+		bool lookup(const std::string& name, SymbolType* &outType) {
 			auto it = table.find(name);
 			if (it != table.end()) {
 				outType = it->second;
@@ -86,7 +87,7 @@ namespace semanticAnalyzer {
 		static SymbolTables& Instance();
 		SymbolTable* currentTable;
 		void insert(const std::string& name, SymbolType* type);
-		bool lookup(const std::string& name, SymbolType* outType);
+		bool lookup(const std::string& name, SymbolType* &outType);
 		void newZone();
 		void deleteZone();
 	private:
@@ -106,16 +107,18 @@ namespace semanticAnalyzer {
 		std::stack<NoteBase*> NotesFlow;	// 符号栈
 		std::stack<int> states;				// 状态栈
 		NoteBase* top = nullptr;
+		bool hasError = false;
 		std::map<int, std::string> GenResult;  // gen输出的结果
 		void PopInputStack();
+		void PopStatesAndNotesFlow(int i);
 		std::string* newTemp();
 		void gen(const std::string& str);
 		void put(const std::string& lexeme, SymbolType* type);
 		SymbolType* get(const std::string& lexeme);
 		std::vector<int>* makeList(int i);
-		std::vector<int>* merge(std::vector<int> p1, std::vector<int> p2);
+		std::vector<int>* merge(std::vector<int>* p1, std::vector<int>* p2);
 		void backpatch(std::vector<int> *p, int i);
-		bool checkIsInLoop() const;
+		bool checkIsInLoop();
 		SymbolType* maxType(const SymbolType* a, const SymbolType* b);
 		SymbolType* createType(std::string baseType, std::string name, std::stack<int>* arrayIndexsPos);
 		NonTerminal* SDTHandler(int SDTnum);
@@ -124,16 +127,17 @@ namespace semanticAnalyzer {
 		bool CheckTypeFit(const SymbolType* a, const SymbolType* b);
 		bool CheckOutOfIndex(const SymbolType* arrayType, int index);
 		bool CheckIsArray(const std::string& lexeme);
+		void PrintInputStack();
 
 		void analysis();	// 就是slr分析器,不过要加一下内容
-		void output();		// 输出
+		void output(std::ostream &fp1);		// 输出
 		SemanticAnalyzer();
 	private:
 		static SemanticAnalyzer* instance;
 #pragma region SDTFunction
 		NonTerminal* Program();
 		NonTerminal* Block();
-		NonTerminal* Decls();
+		NonTerminal* Decls(int i);
 		NonTerminal* Decl();
 		NonTerminal* Type(int i);
 		NonTerminal* Basic(int i);

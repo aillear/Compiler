@@ -19,7 +19,7 @@ void semanticAnalyzer::SymbolTables::insert(const std::string& name, SymbolType*
 {
 	currentTable->insert(name, type);
 }
-bool semanticAnalyzer::SymbolTables::lookup(const std::string& name, SymbolType* outType)
+bool semanticAnalyzer::SymbolTables::lookup(const std::string& name, SymbolType* &outType)
 {
 	return currentTable->lookup(name, outType);
 }
@@ -86,6 +86,13 @@ void semanticAnalyzer::SemanticAnalyzer::PopInputStack()
 	}
 	top = input;
 }
+void semanticAnalyzer::SemanticAnalyzer::PopStatesAndNotesFlow(int i)
+{
+	for (int j = 0; j < i; j++) {
+		states.pop();
+		NotesFlow.pop();
+	}
+}
 std::string* semanticAnalyzer::SemanticAnalyzer::newTemp()
 {
 	return new std::string(std::format("t{}", tempCount++));
@@ -103,36 +110,50 @@ SymbolType* semanticAnalyzer::SemanticAnalyzer::get(const std::string& lexeme)
 {
 	SymbolType* res = nullptr;
 	GetSymbolTables().lookup(lexeme, res);
-	return res;
+	return res; 
 }
 std::vector<int>* semanticAnalyzer::SemanticAnalyzer::makeList(int i)
 {
 	return new std::vector<int>{i};
 }
-std::vector<int>* semanticAnalyzer::SemanticAnalyzer::merge(std::vector<int> p1, std::vector<int> p2)
-{
+std::vector<int>* semanticAnalyzer::SemanticAnalyzer::merge(std::vector<int>* p1, std::vector<int>* p2)
+{	
 	std::unordered_set<int> uniqueElements;
-	for (int num : p1) {
-		uniqueElements.insert(num);
+	if (p1 != nullptr) {
+		for (int num : *p1) {
+			uniqueElements.insert(num);
+		}
 	}
-	for (int num : p2) {
-		uniqueElements.insert(num);
+	if (p2 != nullptr) {
+		for (int num : *p2) {
+			uniqueElements.insert(num);
+		}
 	}
 	return new std::vector<int>(uniqueElements.begin(), uniqueElements.end());
 }
 void semanticAnalyzer::SemanticAnalyzer::backpatch(std::vector<int>* p, int i)
 {
+	if (p == nullptr) {
+		return;
+	}
 	for (int index : *p) {
-		GenResult[index].replace(GenResult[index].find("___"), 3, std::to_string(i));
+		int tmp = GenResult[index].find("___");
+		GenResult[index].replace(tmp, 3, std::to_string(i));
 	}
 }
-bool semanticAnalyzer::SemanticAnalyzer::checkIsInLoop() const
+bool semanticAnalyzer::SemanticAnalyzer::checkIsInLoop()
 {
-	return (loopCounter > 0);
+	if (loopCounter <= 0) {
+		std::ofstream fp2 = std::ofstream("exe3/sample.err", std::ios::app);
+		fp2 << std::format("Error: Break/Continue must be in a loop @ ({}, {})", lexer::GetLexer().line, lexer::GetLexer().row) << std::endl;
+		hasError = true;
+		fp2.close();
+	}
+	return loopCounter > 0;
 }
 SymbolType* semanticAnalyzer::SemanticAnalyzer::maxType(const SymbolType* a, const SymbolType* b)
 {
-	SymbolType* res = new SymbolType(false, 8, "float");
+	SymbolType* res = new SymbolType(false, 8, "float" , "");
 	if (a->baseType == b->baseType && a->baseType == "int") {
 		res->width = 4;
 		res->baseType = "int";
@@ -143,7 +164,7 @@ SymbolType* semanticAnalyzer::SemanticAnalyzer::createType(std::string baseType,
 {
 	std::stack<int> arrayIndexs = *arrayIndexsPos;
 	int w = (baseType == "int") ? 4 : 8;
-	SymbolType* temp = new SymbolType(false, w, name, baseType);
+	SymbolType* temp = new SymbolType(false, w, baseType, name);
 	if (arrayIndexs.empty() || arrayIndexsPos == nullptr) {
 		return temp;
 	}
@@ -158,14 +179,30 @@ SymbolType* semanticAnalyzer::SemanticAnalyzer::createType(std::string baseType,
 bool semanticAnalyzer::SemanticAnalyzer::CheckUndefinedVariable(const std::string& lexeme)
 {
 	SymbolType* gb = nullptr;
-	return GetSymbolTables().lookup(lexeme, gb);
+	bool flag = GetSymbolTables().lookup(lexeme, gb);
+	if (flag == false)
+	{
+		std::ofstream fp2 = std::ofstream("exe3/sample.err", std::ios::app);
+		fp2 << std::format("Error: Undefined variable {} @ ({}, {})", lexeme, lexer::GetLexer().line, lexer::GetLexer().row) << std::endl;
+		hasError = true;
+		fp2.close();
+		return false;
+	}
+	return true;
 }
 bool semanticAnalyzer::SemanticAnalyzer::CheckTypeFit(const SymbolType* a, const SymbolType* b)
 {
 	SymbolType* temp = maxType(a, b);
 	std::string str = temp->baseType;
 	delete temp;
-	if (a->baseType != str) return false;
+	if (a->baseType != str)
+	{
+		std::ofstream fp2 = std::ofstream("exe3/sample.err", std::ios::app);
+		fp2 << std::format("Error: Type mismatch: {} & {} @ ({}, {})",a->baseType, b->baseType, lexer::GetLexer().line, lexer::GetLexer().row) << std::endl;
+		hasError = true;
+		fp2.close();
+		return false;
+	}
 	return true;
 }
 bool semanticAnalyzer::SemanticAnalyzer::CheckOutOfIndex(const SymbolType* arrayType, int index)
@@ -174,12 +211,43 @@ bool semanticAnalyzer::SemanticAnalyzer::CheckOutOfIndex(const SymbolType* array
 		return false;
 	}
 	int elemWidth = arrayType->subArrayType->width;
-	if (index >= arrayType->width / elemWidth) return false;
+	if (index >= arrayType->width / elemWidth) 
+	{
+		std::ofstream fp2 = std::ofstream("exe3/sample.err", std::ios::app);
+		fp2 << std::format("Error: Array out of index @ ({}, {})", lexer::GetLexer().line, lexer::GetLexer().row) << std::endl;
+		hasError = true;
+		fp2.close();
+		return false;
+	}
 	return true;
 }
 bool semanticAnalyzer::SemanticAnalyzer::CheckIsArray(const std::string& lexeme)
 {
-	return get(lexeme)->isArray;
+	if (get(lexeme)->isArray == false)
+	{
+		std::ofstream fp2 = std::ofstream("exe3/sample.err", std::ios::app);
+		fp2 << std::format("Error: {} is not an array @ ({}, {})", lexeme, lexer::GetLexer().line, lexer::GetLexer().row) << std::endl;
+		hasError = true;
+		fp2.close();
+		return false;
+	}
+	return true;
+}
+void semanticAnalyzer::SemanticAnalyzer::PrintInputStack()
+{
+	std::stack<NoteBase*> temp = NotesFlow;
+	std::stack<NoteBase*> temp2;
+	while (!temp.empty())
+	{
+		temp2.push(temp.top());
+		temp.pop();
+	}
+	while (!temp2.empty())
+	{
+		std::cout << temp2.top()->tokenValue << " ";
+		temp2.pop();
+	}
+	std::cout << std::endl;
 }
 void semanticAnalyzer::SemanticAnalyzer::analysis()
 {
@@ -193,7 +261,7 @@ void semanticAnalyzer::SemanticAnalyzer::analysis()
 				states.push(p.second);
 				NotesFlow.push(top);
 				// 循环计数&维护符号表
-				if (input == "while") {
+				if (input == "while" || input == "do") {
 					loopCounter++;
 				}
 				else if (input == "{") {
@@ -202,14 +270,22 @@ void semanticAnalyzer::SemanticAnalyzer::analysis()
 				else if (input == "}") {
 					GetSymbolTables().deleteZone();
 				}
+				PrintInputStack();
+				std::cout << "Shift " << p.second << std::endl;
+				std::cout << input << " " <<  state << "\n\n";
 				PopInputStack();
 			}
 			else if (p.first == 'r') {
 				// 规约
 				GrammarRule gr = GetGrammarList().GetGR(p.second);
 				// 出栈
-				NonTerminal* nt = SDTHandler(p.second);
 
+				PrintInputStack();
+				std::cout << "Reduce by " << gr << "\n";
+				std::cout << input << " " << state << "\n\n";
+
+				NonTerminal* nt = SDTHandler(p.second);
+				
 				std::pair<char, int> p2;
 				GetAnalysisTable().GetPair(states.top(), gr.left, p2);
 				// state
@@ -227,19 +303,59 @@ void semanticAnalyzer::SemanticAnalyzer::analysis()
 }
 NonTerminal* semanticAnalyzer::SemanticAnalyzer::SDTHandler(int SDTnum)
 {
-	SDTnum--;
 	// todo:  根据SDTnum编号来查找对应的sdt,转到对应的函数执行.返回得到的Nonterminal的指针.
 	// 之后可能要添加许多的函数.
-	if(SDTnum == 1)
-	{
-		
-	}
-	return nullptr;
+	if (SDTnum == 1)
+		return Program();
+	else if (SDTnum == 2)
+		return Block();
+	else if (SDTnum <= 4)
+		return Decls(SDTnum - 3);
+	else if (SDTnum == 5)
+		return Decl();
+	else if (SDTnum <= 7)
+		return Type(SDTnum - 6);
+	else if (SDTnum <= 9)
+		return Basic(SDTnum - 8);
+	else if (SDTnum <= 11)
+		return Stmts(SDTnum - 10);
+	else if (SDTnum <= 20)
+		return Stmt(SDTnum - 12);
+	else if (SDTnum <= 22)
+		return Loc(SDTnum - 21);
+	else if (SDTnum <= 24)
+		return Bool(SDTnum - 23);
+	else if (SDTnum <= 26)
+		return Join(SDTnum - 25);
+	else if (SDTnum <= 29)
+		return Equality(SDTnum - 27);
+	else if (SDTnum <= 35)
+		return Rel(SDTnum - 30);
+	else if (SDTnum <= 37)
+		return Expr(SDTnum - 36);
+	else if (SDTnum <= 39)
+		return Term(SDTnum - 38);
+	else if (SDTnum <= 41)
+		return Unary(SDTnum - 40);
+	else if (SDTnum <= 46)
+		return Factor(SDTnum - 42);
+	else if (SDTnum <= 48)
+		return Opa(SDTnum - 47);
+	else if (SDTnum <= 50)
+		return Opb(SDTnum - 49);
+	else if (SDTnum <= 52)
+		return Opc(SDTnum - 51);
+	else if (SDTnum == 53)
+		return M();
+	else if (SDTnum == 54)
+		return N();
+	else
+		throw "OutOfSDTNumRangeError";
 }
-void semanticAnalyzer::SemanticAnalyzer::output()
+void semanticAnalyzer::SemanticAnalyzer::output(std::ostream& fp1)
 {
 	for (auto it = GenResult.begin(); it != GenResult.end(); ++it) {
-		std::cout << it->first << ": " << it->second << std::endl;
+		fp1 << it->first << ": " << it->second << std::endl;
 	}
 }
 semanticAnalyzer::SemanticAnalyzer::SemanticAnalyzer()

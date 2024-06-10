@@ -145,6 +145,7 @@
   <ItemGroup>
     <Text Include="exe2\grammar.txt" />
     <Text Include="exe3\grammar.txt" />
+    <Text Include="exe3\SDT.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />

@@ -383,7 +383,7 @@ bool Parser::Analysis(std::ofstream& outfile, std::ofstream& errfile)
 		{
 			errfile << "Error at (" << GetLexer().line << ", " << GetLexer().row << ")\nStack: \n";
 			PrintStack(errfile);
-			//std::cout << top << " " << state << "\n\n";
+			std::cout << top << " " << state << "\n\n";
 			err++;
 			errorList.push_back(Error(GetLexer().line, GetLexer().row, "Syntax error, input symbol:" + top));
 			// flag = false;

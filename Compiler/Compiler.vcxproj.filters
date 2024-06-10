@@ -64,6 +64,9 @@
     <Text Include="exe3\grammar.txt">
       <Filter>exe3</Filter>
     </Text>
+    <Text Include="exe3\SDT.txt">
+      <Filter>exe3</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />

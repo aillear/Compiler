@@ -19,6 +19,28 @@ Lexer& lexer::GetLexer() {
 
 void Lexer::SetFilePointer(FILE* _fp) {
     fp = _fp;
+    line = 1;	 // line 1
+    row = 1;	 // row 1
+    peek = ' '; //  space
+    TopToken = nullptr;
+    words.clear();
+    Reverse(Word("if", Tag::IF));
+    Reverse(Word("else", Tag::ELSE));
+    Reverse(Word("while", Tag::WHILE));
+    Reverse(Word("do", Tag::DO));
+    Reverse(Word("break", Tag::BREAK));
+    Reverse(Word("true", Tag::TRUE));
+    Reverse(Word("false", Tag::FALSE));
+    Reverse(Type("int", Tag::INT, 4));
+    Reverse(Type("float", Tag::FLOAT, 8));
+    Reverse(Type("bool", Tag::BOOL, 1));
+    Reverse(Type("char", Tag::CHAR, 1));
+    Reverse(Word("continue", Tag::CONTINUE));
+    Reverse(Word("for", Tag::FOR));
+    Reverse(Word("switch", Tag::SWITCH));
+    Reverse(Word("case", Tag::CASE));
+    Reverse(Word("return", Tag::RETURN));
+    Reverse(Word("void", Tag::VOID));
 }
 
 void Lexer::Readch() {
@@ -153,6 +175,7 @@ Token* lexer::Lexer::FixedScan()
     TopToken = Scan();
     return TopToken;
 }
+
 
 Lexer::Lexer() { 
     Reverse(Word("if", Tag::IF));

@@ -63,8 +63,10 @@ stmt → loc = expr ;
                 }
 stmt → if ( bool ) M stmt1	
                 {
-            backpatch(bool.truelist, M.instr); 
-            stmt.nextlist=merge(bool.falselist, stmt1.nextlist);
+					backpatch(bool.truelist, M.instr); 
+					stmt.nextlist=merge(bool.falselist, stmt1.nextlist);
+					stmt.continuelist=stmt1.continuelist;
+					stmt.breaklist=stmt1.breaklist;
                 }
 stmt → if ( bool ) M1 stmt1 N else M2 stmt2 
 				{
@@ -72,6 +74,8 @@ stmt → if ( bool ) M1 stmt1 N else M2 stmt2
                     backpatch(bool.falselist, M2.instr);
                     temp=merge(stmt1.nextlist, N.nextlist);
                     stmt.nextlist=merge(temp, stmt2.nextlist);
+					stmt.continuelist=stmt1.continuelist;
+					stmt.breaklist=stmt1.breaklist;
                 }
 stmt     → while M1 ( bool ) M2 stmt1
 				{
@@ -226,13 +230,16 @@ factor   → loc
 factor   → id 
                 {
                     checkUndefinedVariable(id.lexval);
+					factor.type = top.get(id.lexval);
                     factor.addr = id.lexval;
                 }
 factor   → num 
                 {
+					factor.type = int;
                     factor.addr = top.get(num.lexval)
                 }
 factor   → real {
+					factor.type = float;
                     factor.addr = top.get(real.lexval)
                 }
 opa      → + {opa.op = '+'}
