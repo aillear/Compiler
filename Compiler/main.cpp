@@ -20,7 +20,7 @@ void static exe1() {
     }
     std::cout << "------------------------------" << std::endl;
     GetLexer().SetFilePointer(fp);
-    SymbolTable symbolTable; // 创建符号表
+    OldSymbolTable symbolTable; // 创建符号表
 
     // 输出文件
     std::ofstream outFile("sample.out");

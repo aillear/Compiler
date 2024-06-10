@@ -59,11 +59,11 @@ namespace lexer
 		std::string name;
 	};
 
-	class SymbolTable
+	class OldSymbolTable
 	{	
 	public:
-		SymbolTable();
-		~SymbolTable();
+		OldSymbolTable();
+		~OldSymbolTable();
 		void AddNewSymbol(const std::string &type, const std::string &name);
 		void OutputTable(const std::string &path);
 

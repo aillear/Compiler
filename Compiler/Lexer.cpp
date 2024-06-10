@@ -201,7 +201,7 @@ std::string Word::ToString() {
 
 Type::~Type() { ; }
 
-lexer::SymbolTable::SymbolTable()
+lexer::OldSymbolTable::OldSymbolTable()
 {
     AddNewSymbol("KEYWORD", "bool");
     AddNewSymbol("KEYWORD", "break");
@@ -222,11 +222,11 @@ lexer::SymbolTable::SymbolTable()
     AddNewSymbol("KEYWORD", "false");
 }
 
-lexer::SymbolTable::~SymbolTable()
+lexer::OldSymbolTable::~OldSymbolTable()
 {
 }
 
-void SymbolTable::AddNewSymbol(const std::string& type, const std::string& name) {
+void OldSymbolTable::AddNewSymbol(const std::string& type, const std::string& name) {
     // 检查是否有重复项
     for (const auto& entry : table) {
         if (entry.name == name) {
@@ -240,7 +240,7 @@ void SymbolTable::AddNewSymbol(const std::string& type, const std::string& name)
     table.push_back(newEntry);
 }
 
-void SymbolTable::OutputTable(const std::string& path) {
+void OldSymbolTable::OutputTable(const std::string& path) {
     // 将符号表输出到指定路径的文件中
     std::ofstream outFile(path);
     if (!outFile.is_open()) {
