@@ -6,6 +6,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <algorithm>
 using namespace std;
 
 vector<string> util::Split(const string& str, string ch, string(*func)(const string&))
@@ -50,7 +51,6 @@ string util::Trim(const string& str)
 	size_t end = str.find_last_not_of(" \t\n\r");
 	return str.substr(start, end - start + 1);
 }
-
 /*
 * slr_original中，箭头替换成@，epsilon替换成~
 * 依照grammer.txt解析，目前是exe2的版本

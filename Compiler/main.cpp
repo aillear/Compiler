@@ -2,11 +2,12 @@
 #include "Parser.h"
 #include <fstream>
 #include "Utils.h"
+#include "SemanticAnalyzer.h"
 #pragma warning(disable:4996) // 禁用警告 4996（_CRT_SECURE_NO_WARNINGS 相关的警告）
 
 using namespace lexer;
 using namespace parser;
-
+using namespace semanticAnalyzer;
 void static exe1() {
     FILE* fp;
     std::string fileName;
@@ -99,7 +100,21 @@ void static exe3() {
     util::slrTransform();
 }
 
+void f(SymbolType* t) {
+    if (t == nullptr) return;
+    std::cout << t->baseType << " " << t->width << " " << t->isArray << std::endl;
+    f(t->subArrayType);
+}
+void static test() {
+    std::stack<int> a;
+    a.push(5);
+    a.push(4);
+    a.push(3);
+    SymbolType* t = GetSemanticAnalyzer().createType("int", a);
+    f(t);
+    std::cout << GetSemanticAnalyzer().CheckOutOfIndex(t->subArrayType, 3) << std::endl;
+}
 int main() {
-    exe3();
+    test();
     return 0;
 }

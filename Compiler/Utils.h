@@ -9,7 +9,7 @@ namespace util {
 	std::vector<std::string> Split(const std::string& str, std::string ch = " ", std::string(*func)(const std::string&) = nullptr);
 	// 字符串去空格
 	std::string Trim(const std::string& str);
-	// 转换slr
+
 	std::vector<std::vector<std::string>> ReadCSV(const std::string& filename);
 	void slrTransform();
 }
