@@ -12,22 +12,27 @@ namespace semanticAnalyzer {
 	// 符号基类
 	class NoteBase {
 	public:
-		std::string lexeme;
+		std::string tokenValue;
+		bool isNonTerminal;
+		NoteBase(bool isN, std::string tv) : isNonTerminal(isN), tokenValue(tv) {}
 	};
 
 	// 终结符
-	class Terminal : NoteBase
+	class Terminal : public NoteBase
 	{
 	public:
-		Terminal();
+		std::string lexval;
+		Terminal(std::string le, std::string tv) : NoteBase(false, tv), lexval(lexval) { ; }
+		Terminal(std::string tv) : NoteBase(false, tv), lexval("") { ; }
 	private:
 		  
 	};
 
 	// 非终结符
-	class NonTerminal : NoteBase {
+	class NonTerminal : public NoteBase {
 	public:
-
+		std::unordered_map<std::string, void*> param;
+		NonTerminal(std::string tv) : NoteBase(true, tv) { ; }
 	private:
 	};
 
@@ -97,8 +102,11 @@ namespace semanticAnalyzer {
 		int tempCount = 0;		// 临时变量计数
 		int nextInStr = 0;		// 三元式计数
 		int loopCounter = 0;    // 循环层数计数
-		std::vector<NoteBase*> NotesFlow;	// 符号栈
+		std::stack<NoteBase*> NotesFlow;	// 符号栈
+		std::stack<int> states;				// 状态栈
+		NoteBase* top = nullptr;
 		std::map<int, std::string> GenResult;  // gen输出的结果
+		void PopInputStack();
 		std::string newTemp();
 		void gen(const std::string& str);
 		void put(const std::string& lexeme, SymbolType* type);
@@ -116,6 +124,7 @@ namespace semanticAnalyzer {
 
 		void analysis();	// 就是slr分析器,不过要加一下内容
 		void output();		// 输出
+		SemanticAnalyzer();
 	private:
 		static SemanticAnalyzer* instance;
 	};

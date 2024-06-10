@@ -1,12 +1,11 @@
 #include "SemanticAnalyzer.h"
 #include <format>
+#include "Lexer.h"
+#include "Parser.h"
+
 using namespace semanticAnalyzer;
-
-
-semanticAnalyzer::Terminal::Terminal()
-{
-}
-
+using namespace parser;
+#pragma region SymbolTable
 
 SymbolTables* SymbolTables::instance = nullptr;
 SymbolTables& semanticAnalyzer::SymbolTables::Instance()
@@ -44,9 +43,11 @@ void semanticAnalyzer::SymbolTables::deleteZone()
 	delete temp;
 }
 SymbolTables::SymbolTables() {
-	newZone();
+	currentTable = nullptr;
 }
+#pragma endregion
 
+#pragma region SemanticAnalyzer
 SemanticAnalyzer* SemanticAnalyzer::instance = nullptr;
 SemanticAnalyzer& semanticAnalyzer::SemanticAnalyzer::Instance()
 {
@@ -58,6 +59,32 @@ SemanticAnalyzer& semanticAnalyzer::SemanticAnalyzer::Instance()
 void semanticAnalyzer::SemanticAnalyzer::SetStartWith(int num)
 {
 	this->nextInStr = num;
+}
+void semanticAnalyzer::SemanticAnalyzer::PopInputStack()
+{
+	if (top->tokenValue == "$") return;
+	lexer::Token* token_input = lexer::GetLexer().FixedScan();
+	Terminal* input = nullptr;
+	if (token_input->tag == lexer::Tag::NUM) {
+		input = new Terminal("num", token_input->ToString());
+	}
+	else if (token_input->tag == lexer::Tag::REAL) {
+		input = new Terminal("real", token_input->ToString());
+	}
+	else if (token_input->tag == lexer::Tag::IDENTIFIER) {
+		input = new Terminal("id", token_input->ToString());
+	}
+	else if (token_input->tag == lexer::Tag::END) {
+		input = new Terminal("$", token_input->ToString());
+	}
+	else if (token_input->tag == lexer::Tag::UNDEFINED) {
+		input = new Terminal("undefined", token_input->ToString());
+	}
+	else
+	{
+		input = new Terminal(token_input->ToString());
+	}
+	top = input;
 }
 std::string semanticAnalyzer::SemanticAnalyzer::newTemp()
 {
@@ -151,6 +178,48 @@ bool semanticAnalyzer::SemanticAnalyzer::CheckOutOfIndex(const SymbolType* array
 }
 void semanticAnalyzer::SemanticAnalyzer::analysis()
 {
+	while (true)
+	{
+		int state = states.top();
+		std::string input = top->tokenValue;
+		std::pair<char, int> p;
+		if (GetAnalysisTable().GetPair(state, input, p)) {
+			if (p.first == 's') {
+				states.push(p.second);
+				NotesFlow.push(top);
+				// 循环计数&维护符号表
+				if (input == "while") {
+					loopCounter++;
+				}
+				else if (input == "{") {
+					GetSymbolTables().newZone();
+				}
+				else if (input == "}") {
+					GetSymbolTables().deleteZone();
+				}
+				PopInputStack();
+			}
+			else if (p.first == 'r') {
+				// 规约
+				GrammarRule gr = GetGrammarList().GetGR(p.second);
+				// 出栈
+				//	 todo:  根据p.second来查找对应的sdt,转到对应的函数执行.设定返回值为nt如下
+				NonTerminal* nt = nullptr;
+
+				std::pair<char, int> p2;
+				GetAnalysisTable().GetPair(states.top(), gr.left, p2);
+				// state
+				states.push(p2.second);
+				NotesFlow.push(nt);
+			}
+			else if (p.first == 'd') {
+				states.push(p.second);
+			}
+			else if (p.first == 'a') {
+				return;   // 分析完毕
+			}
+		}
+	}
 }
 void semanticAnalyzer::SemanticAnalyzer::output()
 {
@@ -158,7 +227,15 @@ void semanticAnalyzer::SemanticAnalyzer::output()
 		std::cout << it->first << ": " << it->second << std::endl;
 	}
 }
+semanticAnalyzer::SemanticAnalyzer::SemanticAnalyzer()
+{
+	states.push(0);
+	NotesFlow.push(new Terminal("$"));
+	top = new Terminal(" ");
+	PopInputStack();
+}
 SemanticAnalyzer& semanticAnalyzer::GetSemanticAnalyzer()
 {
 	return SemanticAnalyzer::Instance();
 }
+#pragma endregion

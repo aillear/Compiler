@@ -258,6 +258,8 @@ AnalysisTable::~AnalysisTable()
 
 #pragma endregion
 
+# pragma region Class: Parser
+
 Parser* Parser::instance = nullptr;
 Parser::Parser()
 {
