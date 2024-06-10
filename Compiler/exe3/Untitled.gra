@@ -1,0 +1,57 @@
+program block decls decl type basic stmts stmt loc bool join equality rel expr term unary factor opa opb opc M N
+( ) [ ] { } + - * / ! ; < > <= >= == != || && = id num real float int if else while do break continue false true
+program→basic id ( ) block
+block→{ decls stmts }
+decls→decls decl
+decls→ε
+decl→type id ;
+type→type [ num ]
+type→basic
+basic→float
+basic→int
+stmts→stmts M stmt
+stmts→ε
+stmt→id = expr ;
+stmt→loc = expr ;
+stmt→if ( bool ) M stmt
+stmt→if ( bool ) M stmt N else M stmt
+stmt→while M ( bool ) M stmt
+stmt→do M stmt while M ( bool ) ;
+stmt→break ;
+stmt→continue ;
+stmt→block
+loc→loc [ num ]
+loc→id [ num ]
+bool→bool || M join
+bool→join
+join→join && M equality
+join→equality
+equality→expr rel expr
+equality→true
+equality→false
+rel→<
+rel→>
+rel→==
+rel→!=
+rel→<=
+rel→>=
+expr→expr opa term
+expr→term
+term→term opb unary
+term→unary
+unary→opc unary
+unary→factor
+factor→( expr )
+factor→loc
+factor→id
+factor→num
+factor→real
+opa→+
+opa→-
+opb→*
+opb→/
+opc→!
+opc→-
+M→ε
+N→ε
+START: program

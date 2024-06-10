@@ -9,21 +9,21 @@ type     → type [ num ] | basic
 basic    → float | int
 
 /* Statement */
-stmts    → stmts stmt | ε
+stmts    → stmts M stmt | ε
 stmt     → id = expr ;
            | loc = expr ;
-           | if ( bool ) stmt
-           | if ( bool ) stmt else stmt
-           | while ( bool ) stmt
-           | do stmt while ( bool ) ;
+           | if ( bool ) M stmt
+           | if ( bool ) M stmt N else M stmt
+           | while M ( bool ) M stmt
+           | do M stmt while M ( bool ) ;
            | break ;
            | continue ;
            | block
 loc → loc [ num ] | id [ num ]
 
 /* Condition Expressions */
-bool     → bool || join | join
-join     → join && equality | equality
+bool     → bool || M join | join
+join     → join && M equality | equality
 equality → expr rel expr | true | false
 rel      → < | > | == | != | <= | >=
 
@@ -35,3 +35,6 @@ factor   → ( expr ) | loc | id | num | real
 opa      → + | -
 opb      → * | /
 opc      → ! | -
+
+M        → ε
+N        → ε
