@@ -203,8 +203,7 @@ void semanticAnalyzer::SemanticAnalyzer::analysis()
 				// 规约
 				GrammarRule gr = GetGrammarList().GetGR(p.second);
 				// 出栈
-				//	 todo:  根据p.second来查找对应的sdt,转到对应的函数执行.设定返回值为nt如下
-				NonTerminal* nt = nullptr;
+				NonTerminal* nt = SDThandler(p.second);
 
 				std::pair<char, int> p2;
 				GetAnalysisTable().GetPair(states.top(), gr.left, p2);
@@ -220,6 +219,12 @@ void semanticAnalyzer::SemanticAnalyzer::analysis()
 			}
 		}
 	}
+}
+NonTerminal* semanticAnalyzer::SemanticAnalyzer::SDThandler(int SDTnum)
+{
+	// todo:  根据SDTnum编号来查找对应的sdt,转到对应的函数执行.返回得到的Nonterminal的指针.
+	// 之后可能要添加许多的函数.
+	return nullptr;
 }
 void semanticAnalyzer::SemanticAnalyzer::output()
 {
