@@ -37,7 +37,7 @@ std::vector<parser::GrammarRule> parser::GrammarList::GetRules() const
 }
 GrammarList::GrammarList()
 {
-	std::ifstream file("exe2/grammar.txt");
+	std::ifstream file("exe3/grammar.txt");
 	// 不进行差错处理了
 	if (!file.is_open())
 	{
@@ -207,7 +207,7 @@ std::vector<std::string> parser::AnalysisTable::GetGoto(int s)
 // 生成表,从xx文件里读
 AnalysisTable::AnalysisTable()
 {
-	std::ifstream file("exe2/slr.csv", std::ios::in);
+	std::ifstream file("exe3/slr.csv", std::ios::in);
 	if (!file)
 	{
 		std::cout << "打开文件失败" << std::endl;

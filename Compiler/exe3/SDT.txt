@@ -26,8 +26,9 @@ type     → type1 [ num ]
                 }
 type     → basic
                 {
-                    type.type=basic.type;
+                    type.baseType=basic.type;
                     type.width=basic.width;
+					type.arrayIndexs = new stack<int>;
                 }
 basic    → float
                 {
@@ -46,7 +47,7 @@ stmts    → stmts1 M stmt
                     backpatch(stmts1.nextlist, M.instr); 
                     stmts.nextlist=stmt.nextlist; 
                     stmts.breaklist=merge(stmt.breaklist,stmts1.breaklist);
-                    stmts.continuelist=merge(stmt.continuelist,stmt1.continuelist);
+                    stmts.continuelist=merge(stmt.continuelist,stmts1.continuelist);
                 }
 stmts    → ε
 stmt     → id = expr ; 
@@ -55,17 +56,17 @@ stmt     → id = expr ;
                     checkTypeFit(id.type, expr.type);
                     gen(id.lexval'='expr.addr);
                 }
-stmt     → loc = expr ; 
+stmt → loc = expr ; 
                 {
                     checkTypeFit(loc.array.base, expr.type);
-                    gen(loc.array.base'['loc.addr']''='expr.addr);
+                    gen(loc.array.name'['loc.addr']''='expr.addr);
                 }
-stmt     → if ( bool ) M stmt1	
+stmt → if ( bool ) M stmt1	
                 {
-                    backpatch(bool.truelist, M.instr); 
-                    stmt.nextlist=merge(bool.falselist, stmt1.nextlist);
+            backpatch(bool.truelist, M.instr); 
+            stmt.nextlist=merge(bool.falselist, stmt1.nextlist);
                 }
-stmt     → if ( bool ) M1 stmt1 N else M2 stmt2 
+stmt → if ( bool ) M1 stmt1 N else M2 stmt2 
 				{
                     backpatch(bool.truelist, M1.instr); 
                     backpatch(bool.falselist, M2.instr);
@@ -103,7 +104,7 @@ stmt     → continue ;
 stmt     → block 
                 {
                     stmt.nextlist=block.nextlist;
-                    stmt.breaklist=block.break;
+                    stmt.breaklist=block.breaklist;
                     stmt.continuelist=block.continuelist;
                 }
 loc      → loc1 [ num ] 
@@ -119,6 +120,7 @@ loc      → loc1 [ num ]
 loc      → id [ num ] 
                 {
                     checkUndefinedVariable(id.lexval);
+					checkIsArray(id.lexval);
                     loc.array=top.get(id.lexval);
                     loc.type=loc.array.type.elem;
                     checkOutOfIndex(loc.array.type, num.lexval)
@@ -133,7 +135,11 @@ bool     → bool1 || M join
                     bool.truelist=merge(bool1.truelist, join.truelist);
                     bool.falselist=join.falselist;
                 }
-bool     → join {bool.addr=join.addr}
+bool     → join 
+				{
+					bool.truelist=join.truelist;
+                    bool.falselist=join.falselist;
+				}
 join     → join1 && M equality 
                 {
                     backpatch(join1.truelist, M.instr);
@@ -141,11 +147,16 @@ join     → join1 && M equality
                     join.falselist=merge(join1.falselist, equality.falselist);
                 }
 
-join     → equality {join.addr = equality.addr}
+join     → equality 
+				{
+					join.truelist=equality.truelist;
+                    join.falselist=equality.falselist;
+				}
 
 equality → expr1 rel expr2
                 {
-                    equality.truelist=makelist(nextinstr); equality.falselist=makelist(nextinstr+1); 
+                    equality.truelist=makelist(nextinstr);
+					equality.falselist=makelist(nextinstr+1); 
                     gen('if' expr1.addr rel.op expr2.addr 'goto  ___');
                     gen('goto _____');
                 }
@@ -210,7 +221,7 @@ factor   → loc
                 {
                     factor.addr =new Temp();
                     factor.type=loc.array.base;
-                    gen(factor.addr'='loc.array.base'['loc.addr']');
+                    gen(factor.addr'='loc.array.name'['loc.addr']');
                 }
 factor   → id 
                 {

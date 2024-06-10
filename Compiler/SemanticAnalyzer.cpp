@@ -86,9 +86,9 @@ void semanticAnalyzer::SemanticAnalyzer::PopInputStack()
 	}
 	top = input;
 }
-std::string semanticAnalyzer::SemanticAnalyzer::newTemp()
+std::string* semanticAnalyzer::SemanticAnalyzer::newTemp()
 {
-	return std::format("t{}", tempCount++);
+	return new std::string(std::format("t{}", tempCount++));
 }
 void semanticAnalyzer::SemanticAnalyzer::gen(const std::string& str)
 {
@@ -105,11 +105,11 @@ SymbolType* semanticAnalyzer::SemanticAnalyzer::get(const std::string& lexeme)
 	GetSymbolTables().lookup(lexeme, res);
 	return res;
 }
-std::vector<int> semanticAnalyzer::SemanticAnalyzer::makeList(int i)
+std::vector<int>* semanticAnalyzer::SemanticAnalyzer::makeList(int i)
 {
-	return std::vector<int>{i};
+	return new std::vector<int>{i};
 }
-std::vector<int> semanticAnalyzer::SemanticAnalyzer::merge(std::vector<int> p1, std::vector<int> p2)
+std::vector<int>* semanticAnalyzer::SemanticAnalyzer::merge(std::vector<int> p1, std::vector<int> p2)
 {
 	std::unordered_set<int> uniqueElements;
 	for (int num : p1) {
@@ -118,11 +118,11 @@ std::vector<int> semanticAnalyzer::SemanticAnalyzer::merge(std::vector<int> p1, 
 	for (int num : p2) {
 		uniqueElements.insert(num);
 	}
-	return std::vector<int>(uniqueElements.begin(), uniqueElements.end());
+	return new std::vector<int>(uniqueElements.begin(), uniqueElements.end());
 }
-void semanticAnalyzer::SemanticAnalyzer::backpatch(std::vector<int> p, int i)
+void semanticAnalyzer::SemanticAnalyzer::backpatch(std::vector<int>* p, int i)
 {
-	for (int index : p) {
+	for (int index : *p) {
 		GenResult[index].replace(GenResult[index].find("___"), 3, std::to_string(i));
 	}
 }
@@ -139,18 +139,19 @@ SymbolType* semanticAnalyzer::SemanticAnalyzer::maxType(const SymbolType* a, con
 	}
 	return res;
 }
-SymbolType* semanticAnalyzer::SemanticAnalyzer::createType(std::string baseType, std::stack<int> arrayIndexs)
+SymbolType* semanticAnalyzer::SemanticAnalyzer::createType(std::string baseType, std::string name, std::stack<int> *arrayIndexsPos)
 {
+	std::stack<int> arrayIndexs = *arrayIndexsPos;
 	int w = (baseType == "int") ? 4 : 8;
-	SymbolType* temp = new SymbolType(false, w, baseType);
-	if (arrayIndexs.empty()) {
+	SymbolType* temp = new SymbolType(false, w, name, baseType);
+	if (arrayIndexs.empty() || arrayIndexsPos == nullptr) {
 		return temp;
 	}
 	while (!arrayIndexs.empty())
 	{
 		w *= arrayIndexs.top();
 		arrayIndexs.pop();
-		temp = new SymbolType(true, w, baseType, temp);
+		temp = new SymbolType(true, w, baseType, name, temp);
 	}
 	return temp;
 }
@@ -175,6 +176,10 @@ bool semanticAnalyzer::SemanticAnalyzer::CheckOutOfIndex(const SymbolType* array
 	int elemWidth = arrayType->subArrayType->width;
 	if (index >= arrayType->width / elemWidth) return false;
 	return true;
+}
+bool semanticAnalyzer::SemanticAnalyzer::CheckIsArray(const std::string& lexeme)
+{
+	return get(lexeme)->isArray;
 }
 void semanticAnalyzer::SemanticAnalyzer::analysis()
 {
@@ -203,7 +208,7 @@ void semanticAnalyzer::SemanticAnalyzer::analysis()
 				// 规约
 				GrammarRule gr = GetGrammarList().GetGR(p.second);
 				// 出栈
-				NonTerminal* nt = SDThandler(p.second);
+				NonTerminal* nt = SDTHandler(p.second);
 
 				std::pair<char, int> p2;
 				GetAnalysisTable().GetPair(states.top(), gr.left, p2);
@@ -220,10 +225,15 @@ void semanticAnalyzer::SemanticAnalyzer::analysis()
 		}
 	}
 }
-NonTerminal* semanticAnalyzer::SemanticAnalyzer::SDThandler(int SDTnum)
+NonTerminal* semanticAnalyzer::SemanticAnalyzer::SDTHandler(int SDTnum)
 {
+	SDTnum--;
 	// todo:  根据SDTnum编号来查找对应的sdt,转到对应的函数执行.返回得到的Nonterminal的指针.
 	// 之后可能要添加许多的函数.
+	if(SDTnum == 1)
+	{
+		
+	}
 	return nullptr;
 }
 void semanticAnalyzer::SemanticAnalyzer::output()
