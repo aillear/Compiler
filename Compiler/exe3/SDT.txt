@@ -1,0 +1,257 @@
+/* Program */
+program  → basic id ( ) block
+                {
+                    backpatch(block.nextlist, nextinstr); 
+                }
+block    → { decls stmts } 
+                {
+                    block.nextlist=stmts.nextlist;
+                    block.continuelist=stmts.continuelist;
+                    block.breaklist=stmts.breaklist;
+                }
+
+/* Declaration */
+decls    → decls decl
+decls    → ε
+decl     → type id ;
+                {
+                    t=type.createType(type.baseType,type.arrayIndexs);
+                    top.put(id.lexeme, t);
+                } 
+type     → type1 [ num ]
+                {
+                    type.baseType=type1.baseType;
+                    type.arrayIndexs=type1.arrayIndexs;
+                    type.arrayIndexs.push(num.lexval);
+                }
+type     → basic
+                {
+                    type.type=basic.type;
+                    type.width=basic.width;
+                }
+basic    → float
+                {
+                    basic.type=float;
+                    basic.width=8;
+                }
+basic    → int  
+                {
+                    basic.type=int;
+                    basic.width=4;
+                }
+
+/* Statement */
+stmts    → stmts1 M stmt 
+                {
+                    backpatch(stmts1.nextlist, M.instr); 
+                    stmts.nextlist=stmt.nextlist; 
+                    stmts.breaklist=merge(stmt.breaklist,stmts1.breaklist);
+                    stmts.continuelist=merge(stmt.continuelist,stmt1.continuelist);
+                }
+stmts    → ε
+stmt     → id = expr ; 
+                {
+                    checkUndefinedVariable(id.lexval);
+                    checkTypeFit(id.type, expr.type);
+                    gen(id.lexval'='expr.addr);
+                }
+stmt     → loc = expr ; 
+                {
+                    checkTypeFit(loc.array.base, expr.type);
+                    gen(loc.array.base'['loc.addr']''='expr.addr);
+                }
+stmt     → if ( bool ) M stmt1	
+                {
+                    backpatch(bool.truelist, M.instr); 
+                    stmt.nextlist=merge(bool.falselist, stmt1.nextlist);
+                }
+stmt     → if ( bool ) M1 stmt1 N else M2 stmt2 
+				{
+                    backpatch(bool.truelist, M1.instr); 
+                    backpatch(bool.falselist, M2.instr);
+                    temp=merge(stmt1.nextlist, N.nextlist);
+                    stmt.nextlist=merge(temp, stmt2.nextlist);
+                }
+stmt     → while M1 ( bool ) M2 stmt1
+				{
+                    stmt1.nextlist=merge(stmt1.nextlist,stmt1.continuelist)
+                    backpatch(stmt1.nextlist, M1.instr); 
+                    backpatch(bool.truelist, M2.instr);
+                    stmt.nextlist=merge(bool.falselist,stmt1.breaklist);
+                    gen('goto' M1.instr;)
+                }
+stmt     → do M1 stmt1 while M2 ( bool ) ;
+				{
+                    stmt1.nextlist=merge(stmt1.nextlist,stmt1.continuelist)
+                    backpatch(bool.truelist, M1.instr); 
+                    backpatch(stmt1.nextlist, M2.instr);
+                    stmt.nextlist=merge(bool.falselist,stmt1.breaklist);
+                    gen('goto' M1.instr;)
+                }
+stmt     → break ; 
+                {
+                    checkIsInLoop();
+                    stmt.breaklist=makelist(nextinstr);
+                    gen('goto_____')
+                } 
+stmt     → continue ; 
+                {
+                    checkIsInLoop();
+                    stmt.continuelist=makelist(nextinstr);
+                    gen('goto_____')
+                }
+stmt     → block 
+                {
+                    stmt.nextlist=block.nextlist;
+                    stmt.breaklist=block.break;
+                    stmt.continuelist=block.continuelist;
+                }
+loc      → loc1 [ num ] 
+                {
+                    loc.array=loc1.array;
+                    loc.type=loc1.type.elem;
+                    checkOutOfIndex(loc.type, num.lexval)
+                    t=new Temp();
+                    loc.addr=new Temp();
+                    gen(t'='num.lexval'*'loc.type.width);
+                    gen(loc.addr'='loc1.addr'+'t);
+                }
+loc      → id [ num ] 
+                {
+                    checkUndefinedVariable(id.lexval);
+                    loc.array=top.get(id.lexval);
+                    loc.type=loc.array.type.elem;
+                    checkOutOfIndex(loc.array.type, num.lexval)
+                    loc.addr=new Temp();    
+                    gen(loc.addr'='num.lexval'*'loc.type.width)
+                }
+	
+/* Condition Expressions */
+bool     → bool1 || M join 
+                {
+                    backpatch(bool1.falselist, M.instr);
+                    bool.truelist=merge(bool1.truelist, join.truelist);
+                    bool.falselist=join.falselist;
+                }
+bool     → join {bool.addr=join.addr}
+join     → join1 && M equality 
+                {
+                    backpatch(join1.truelist, M.instr);
+                    join.truelist=equality.truelist;
+                    join.falselist=merge(join1.falselist, equality.falselist);
+                }
+
+join     → equality {join.addr = equality.addr}
+
+equality → expr1 rel expr2
+                {
+                    equality.truelist=makelist(nextinstr); equality.falselist=makelist(nextinstr+1); 
+                    gen('if' expr1.addr rel.op expr2.addr 'goto  ___');
+                    gen('goto _____');
+                }
+equality   → true 
+                {
+                    equality.truelist=makelist(nextinstr);
+                    gen(goto_____);
+                }
+equality   → false
+                {
+                    equality.falselist=makelist(nextinstr);
+                    gen(goto_____);
+                }
+
+rel      → < {rel.op = '<'}
+rel      → > {rel.op = '>'}
+rel      → == {rel.op = '=='}
+rel      → != {rel.op = '!='}
+rel      → <= {rel.op = '<='}
+rel      → >= {rel.op = '>='}
+
+/* Arithmetic Expressions */
+expr     → expr1 opa term 
+                {
+                    expr.type=max(expr1.type,term.type);
+                    expr.addr = new Temp(); 
+                    gen(expr.addr '=' expr1.addr opa.op term.addr);
+                }
+expr     → term 
+                {
+                    expr.type=term.type;
+                    expr.addr = term.addr;
+                }
+term     → temr1 opb unary 
+                {
+                    term.type=max(temr1.type,unary.type);
+                    term.addr = new Temp(); 
+                    gen(term.addr '=' temr1.addr opb.op unary.addr);
+                }
+term     → unary 
+                {
+                    term.type=unary.type;
+                    term.addr = unary.addr;
+                }
+unary    → opc unary1 
+                {
+                    unary.type=unary1.type;
+                    unary.addr = new Temp(); 
+                    gen(unary.addr '=' opc.op unary1.addr);
+                }
+unary    → factor 
+                {
+                    unary.type=factor.type;
+                    unary.addr = factor.addr;
+                }
+factor   → ( expr ) 
+                {
+                    factor.type=expr.type;
+                    factor.addr = expr.addr;
+                }
+factor   → loc 
+                {
+                    factor.addr =new Temp();
+                    factor.type=loc.array.base;
+                    gen(factor.addr'='loc.array.base'['loc.addr']');
+                }
+factor   → id 
+                {
+                    checkUndefinedVariable(id.lexval);
+                    factor.addr = id.lexval;
+                }
+factor   → num 
+                {
+                    factor.addr = top.get(num.lexval)
+                }
+factor   → real {
+                    factor.addr = top.get(real.lexval)
+                }
+opa      → + {opa.op = '+'}
+opa      → - {opa.op = '-'}
+opb      → * {opb.op = '*'}
+opb      → / {opb.op = '/'}
+opc      → ! {opc.op = '!'}
+opc      → - {opc.op = 'uminus'}
+
+M        → ɛ {M.instr=nextinstr;}
+N        → ɛ {N.nextlist=makelist(nextinstr); gen('goto_____');}
+
+new Temp()： 产生一个中间临时变量;e.g.t0 t1...
+().addr 用于存储变量或数组元素的地址。
+top.get()： 函数用于获取标识符或数字的值。可能是从符号表中获取标识符的值，或者直接返回数字的值。
+lexval（词法值）：词法值是与词素相关联的信息，它表示词素的实际含义或值。
+().op 用于存储关系运算符的字符串表示。
+maxType(typea, typeb): 返回两个类型中更大的那个
+createType(type.baseType,type.arrayIndexs): 通过type基类以及arrayIndexs来创建类型.当后者为null返回基类型
+
+array:数组名对应符号表的指针
+array.base:数组名对应符号表的指针的基地址
+type:子数组的类型
+type.width:子数组的宽度
+type.elem:子数组元素的类型
+
+arrayIndexs:数组索引栈
+baseType:类型的基类
+
+checkIsInLoop(): 检查当前是否在某个循环,检测不通过则报错
+checkUndefinedVariable(id.lexval):检测这个id是否在符号表内,检测不通过则报错
+checkTypeFit(typeA, typeB):检测左部类型是否能使用右部类型赋值,检测不通过则报错
+checkOutOfIndex(arrayType, index):检测输入的index是否合法,检测不通过则报错

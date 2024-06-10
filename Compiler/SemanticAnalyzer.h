@@ -33,7 +33,7 @@ namespace semanticAnalyzer {
 		static SemanticAnalyzer& Instance();
 		void SetStartWith(int num);
 		int tempCount = 0;		// 临时变量计数
-		int TACcount = 0;		// 三元式计数
+		int nextInStr = 0;		// 三元式计数
 		std::vector<NoteBase*> NotesFlow;	// 符号栈
 		//int labelCount = 0;		// 
 		void newTemp();
