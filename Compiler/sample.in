@@ -1,31 +1,28 @@
 int main()
 {
-    int i; 
-    int j;
-    int cnt; @//@
-    i=3.85+9*11;
-    j=50;
-    cnt=0;
-    While (true)
+    int id1, i, j=10;
+	
+	float id2;
+	bool _id3[5];
+	
+	char cnt;
+    id2=3.85+9*11;
+    id1=50; //123123
+	for(i = 0; i <= 10 & j >= 0; ++i)
+		j--;
+	do{
+		i=i+1-2.3*4/10%2;
+	}while(false);
+    while (i>j || id1 < id2)
     {      
-	cnt=cnt+1;
+		cnt=cnt+1;
         if (i == j)
-	    break;
-	else if (i>j)
-	    j=j+1;
-	else
-	    j=j-1;
+			break;
+		else if (i | j){ @@
+			j=j+1;
+			continue;
+		}
+		else
+			j=j-1;
     }
-}
-
-
-int main() {
-    int a = 1;
-    int b = 1'
-    for(i = 0; i < 10; i++) {
-        int temp = b;
-        b = a + b;
-        a = temp;
-    }
-    return 0;
 }
