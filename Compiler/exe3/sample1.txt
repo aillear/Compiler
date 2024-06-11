@@ -1,0 +1,27 @@
+//no grammar errors
+int main()
+{
+    int id1;
+	int i;
+	int j;
+	int cnt;
+	float id2;
+	i=10;
+	j=10;
+    id2=3.85/2+9*11;
+    id1=50;
+	cnt=0;
+	do{
+		i=i+1-2*4;
+	}while(false);
+    while (i>j || id1 < id2)
+    {      
+		cnt=cnt+1;
+        if (i == j)
+			break;
+		else{
+			j=j+1;
+			continue;
+		}
+    }
+}
