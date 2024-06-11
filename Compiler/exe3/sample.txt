@@ -1,5 +1,11 @@
 int main()
 {
-	int[5][4][3] a;
-	a[1][2][2] = 8;
+	int a;
+	int b;
+	a = 10;
+	b = 3;
+	if (a > b) {
+		b = a;
+	}
+	else b = b + 1;
 }
