@@ -305,11 +305,13 @@ NonTerminal* SemanticAnalyzer::Equality(int i) {
 	}
 	else if(i == 1)// true 
 	{
+		PopStatesAndNotesFlow(1);
 		equality->param["truelist"] = makeList(nextInStr);
 		gen("goto ___");
 	}
 	else if (i == 2) // false
 	{
+		PopStatesAndNotesFlow(1);
 		equality->param["falselist"] = makeList(nextInStr);
 		gen("goto ___");
 	}
