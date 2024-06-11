@@ -119,11 +119,14 @@ std::vector<int>* semanticAnalyzer::SemanticAnalyzer::makeList(int i)
 std::vector<int>* semanticAnalyzer::SemanticAnalyzer::merge(std::vector<int>* p1, std::vector<int>* p2)
 {	
 	std::unordered_set<int> uniqueElements;
+	// merge two lists
+	// if p1 is not nullptr, then merge p1 to uniqueElements
 	if (p1 != nullptr) {
 		for (int num : *p1) {
 			uniqueElements.insert(num);
 		}
 	}
+	// if p2 is not nullptr, then merge p2 to uniqueElements
 	if (p2 != nullptr) {
 		for (int num : *p2) {
 			uniqueElements.insert(num);
@@ -301,49 +304,47 @@ void semanticAnalyzer::SemanticAnalyzer::analysis()
 }
 NonTerminal* semanticAnalyzer::SemanticAnalyzer::SDTHandler(int SDTnum)
 {
-	// todo:  根据SDTnum编号来查找对应的sdt,转到对应的函数执行.返回得到的Nonterminal的指针.
-	// 之后可能要添加许多的函数.
-	if (SDTnum == 1)
+	if (SDTnum == 1) // Program -> Block
 		return Program();
-	else if (SDTnum == 2)
+	else if (SDTnum == 2) // Block -> { Decls Stmts }
 		return Block();
-	else if (SDTnum <= 4)
+	else if (SDTnum <= 4) // Decls -> Decls Decl or Decls -> ε
 		return Decls(SDTnum - 3);
-	else if (SDTnum == 5)
+	else if (SDTnum == 5) // Decl -> Type id ;
 		return Decl();
-	else if (SDTnum <= 7)
-		return Type(SDTnum - 6);
-	else if (SDTnum <= 9)
+	else if (SDTnum <= 7) // Type -> Basic or Type -> Basic [ num ]
+		return Type(SDTnum - 6); 
+	else if (SDTnum <= 9) // Basic -> int or Basic -> float
 		return Basic(SDTnum - 8);
-	else if (SDTnum <= 11)
+	else if (SDTnum <= 11) // Stmts -> Stmts Stmt or Stmts -> ε
 		return Stmts(SDTnum - 10);
-	else if (SDTnum <= 20)
+	else if (SDTnum <= 20) // Stmt -> Loc = Expr; or Stmt -> if ( Expr ) Stmt else Stmt; or Stmt -> while ( Expr ) Stmt; or Stmt -> do Stmt while ( Expr ) ;
 		return Stmt(SDTnum - 12);
-	else if (SDTnum <= 22)
+	else if (SDTnum <= 22) // Loc -> Loc [ Expr ] or Loc -> id
 		return Loc(SDTnum - 21);
-	else if (SDTnum <= 24)
+	else if (SDTnum <= 24) // Bool -> Bool || Join or Bool -> Join
 		return Bool(SDTnum - 23);
-	else if (SDTnum <= 26)
+	else if (SDTnum <= 26) // Join -> Join && Equality or Join -> Equality
 		return Join(SDTnum - 25);
-	else if (SDTnum <= 29)
+	else if (SDTnum <= 29) // Equality -> Equality == Rel or Equality -> Equality != Rel or Equality -> Rel
 		return Equality(SDTnum - 27);
-	else if (SDTnum <= 35)
+	else if (SDTnum <= 35) // Rel -> Expr < Expr or Rel -> Expr <= Expr or Rel -> Expr >= Expr or Rel -> Expr > Expr or Rel -> Expr
 		return Rel(SDTnum - 30);
-	else if (SDTnum <= 37)
+	else if (SDTnum <= 37) // Expr -> Expr + Term or Expr -> Expr - Term or Expr -> Term
 		return Expr(SDTnum - 36);
-	else if (SDTnum <= 39)
+	else if (SDTnum <= 39) // Term -> Term * Factor or Term -> Term / Factor or Term -> Factor
 		return Term(SDTnum - 38);
-	else if (SDTnum <= 41)
+	else if (SDTnum <= 41) // Unary -> - Unary or Unary -> ! Unary or Unary -> Factor
 		return Unary(SDTnum - 40);
-	else if (SDTnum <= 46)
+	else if (SDTnum <= 46) // Factor -> ( Expr ) or Factor -> Loc or Factor -> Bool or Factor -> num or Factor -> real
 		return Factor(SDTnum - 42);
-	else if (SDTnum <= 48)
+	else if (SDTnum <= 48) 
 		return Opa(SDTnum - 47);
-	else if (SDTnum <= 50)
+	else if (SDTnum <= 50) 
 		return Opb(SDTnum - 49);
-	else if (SDTnum <= 52)
+	else if (SDTnum <= 52) 
 		return Opc(SDTnum - 51);
-	else if (SDTnum == 53)
+	else if (SDTnum == 53) 
 		return M();
 	else if (SDTnum == 54)
 		return N();

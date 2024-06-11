@@ -34,7 +34,6 @@ void static exe1()
     }
     while (true)
     {
-
         Token *t = GetLexer().Scan(); // 获取本次的Token
         if (t->tag == Tag::END)
             break;
@@ -119,7 +118,7 @@ void static exe3()
     std::cout << "input file name: " << std::endl;
     while (true)
     {
-        // std::cin >> fileName;
+        std::cin >> fileName;
         fp = fopen(fileName.c_str(), "r");
         if (fp != NULL)
             break;
@@ -131,8 +130,10 @@ void static exe3()
     GetLexer().SetFilePointer(fp);
     std::ofstream outFile1 = std::ofstream("exe2/sample.out");
     std::ofstream outFile2 = std::ofstream("exe2/sample.err");
+    // do grammar analysis first
     if (GetParser().Analysis(outFile1, outFile2) == false)
     {
+        // if error occured, output error list and return
         std::cout << "Error occured in grammar analysis!";
         return;
     }
