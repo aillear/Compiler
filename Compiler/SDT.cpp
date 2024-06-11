@@ -2,7 +2,7 @@
 #include "SemanticAnalyzer.h"
 #include <format>
 using namespace semanticAnalyzer;
-// Í³Ò»¹æ¶¨£º0ÊÇµÚÒ»Ìõ²úÉúÊ½
+// ç»Ÿä¸€è§„å®šï¼š0æ˜¯ç¬¬ä¸€æ¡äº§ç”Ÿå¼
 NonTerminal* SemanticAnalyzer::Program()
 {
 	NonTerminal* program = new NonTerminal("program");
@@ -145,8 +145,8 @@ NonTerminal* SemanticAnalyzer::Stmt(int i) {
 		backpatch((std::vector<int>*)Bool->param["falselist"], *(int*)M2->param["instr"]);
 		std::vector<int>* temp = merge((std::vector<int>*)stmt1->param["nextlist"], (std::vector<int>*)N->param["nextlist"]);
 		stmt->param["nextlist"] = merge(temp, (std::vector<int>*)stmt2->param["nextlist"]);
-		stmt->param["breaklist"] = stmt1->param["breaklist"];
-		stmt->param["continuelist"] = stmt1->param["continuelist"];
+		stmt->param["breaklist"] = merge((std::vector<int>*)stmt1->param["breaklist"], (std::vector<int>*)stmt2->param["breaklist"]);
+		stmt->param["continuelist"] = merge((std::vector<int>*)stmt1->param["continuelist"], (std::vector<int>*)stmt2->param["continuelist"]);
 	}
 	else if (i == 4) // while M1 ( bool ) M2 stmt1
 	{
@@ -158,7 +158,7 @@ NonTerminal* SemanticAnalyzer::Stmt(int i) {
 		PopStatesAndNotesFlow(2);
 		NonTerminal* M1 = (NonTerminal*)NotesFlow.top();
 		PopStatesAndNotesFlow(2);
-		stmt1->param["nextlist"] = merge((std::vector<int>*)stmt1->param["nextlist"], (std::vector<int>*)M1->param["continuelist"]);
+		stmt1->param["nextlist"] = merge((std::vector<int>*)stmt1->param["nextlist"], (std::vector<int>*)stmt1->param["continuelist"]);
 		backpatch((std::vector<int>*)stmt1->param["nextlist"], *(int*)M1->param["instr"]);
 		backpatch((std::vector<int>*)Bool->param["truelist"], *(int*)M2->param["instr"]);
 		stmt->param["nextlist"] = merge((std::vector<int>*)Bool->param["falselist"], (std::vector<int>*)stmt1->param["breaklist"]);
@@ -410,7 +410,7 @@ NonTerminal* SemanticAnalyzer::Factor(int i) {
 		std::string typeStr = ((SymbolType*)loc->param["array"])->baseType;
 		std::string name = ((SymbolType*)loc->param["array"])->name;
 		int w = (typeStr == "float") ? 8 : 4;
-		factor->param["type"] = new SymbolType(false, w, name, typeStr);
+		factor->param["type"] = new SymbolType(false, w, typeStr, name);
 		gen(std::format("{} = {}[{}]", *t, name, *(std::string*)loc->param["addr"]));
 	}
 	else if (i == 2) // id

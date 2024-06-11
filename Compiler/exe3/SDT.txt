@@ -74,8 +74,8 @@ stmt → if ( bool ) M1 stmt1 N else M2 stmt2
                     backpatch(bool.falselist, M2.instr);
                     temp=merge(stmt1.nextlist, N.nextlist);
                     stmt.nextlist=merge(temp, stmt2.nextlist);
-					stmt.continuelist=stmt1.continuelist;
-					stmt.breaklist=stmt1.breaklist;
+					stmt.continuelist=merge(stmt1.continuelist, stmt2.continuelist);
+					stmt.breaklist=merge(stmt1.breaklist, stmt2.breaklist);
                 }
 stmt     → while M1 ( bool ) M2 stmt1
 				{
