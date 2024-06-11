@@ -98,6 +98,8 @@ L1:
     case '/':
         if (Readch('/')) {
             while (!Readch('\n'));
+            line += 1;
+            row = 1;
             return Scan();  // bug fixed
         }
         else return new Word(std::string(1, '/'), Tag::DIVIDE);

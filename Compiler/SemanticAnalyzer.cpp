@@ -156,8 +156,12 @@ bool semanticAnalyzer::SemanticAnalyzer::checkIsInLoop()
 }
 SymbolType* semanticAnalyzer::SemanticAnalyzer::maxType(const SymbolType* a, const SymbolType* b)
 {
+	const SymbolType* Ma;
+	const SymbolType* Mb;
+	Ma = (a != nullptr) ? a : new SymbolType(false, 4, "int", "");
+	Mb = (b != nullptr) ? b : new SymbolType(false, 4, "int", "");
 	SymbolType* res = new SymbolType(false, 8, "float" , "");
-	if (a->baseType == b->baseType && a->baseType == "int") {
+	if (Ma->baseType == Mb->baseType && Ma->baseType == "int") {
 		res->width = 4;
 		res->baseType = "int";
 	}
@@ -186,7 +190,7 @@ bool semanticAnalyzer::SemanticAnalyzer::CheckUndefinedVariable(const std::strin
 	if (flag == false)
 	{
 		std::ofstream fp2 = std::ofstream("exe3/sample.err", std::ios::app);
-		fp2 << std::format("Error: Undefined variable {} @ ({}, {})", lexeme, lexer::GetLexer().line, lexer::GetLexer().row) << std::endl;
+		fp2 << std::format("Error: Undefined variable {} @ ({}, {})", lexeme, lexer::GetLexer().line-1, lexer::GetLexer().row) << std::endl;
 		hasError = true;
 		fp2.close();
 		return false;
@@ -195,6 +199,7 @@ bool semanticAnalyzer::SemanticAnalyzer::CheckUndefinedVariable(const std::strin
 }
 bool semanticAnalyzer::SemanticAnalyzer::CheckTypeFit(const SymbolType* a, const SymbolType* b)
 {
+	if (a == nullptr) return true;
 	SymbolType* temp = maxType(a, b);
 	std::string str = temp->baseType;
 	delete temp;
@@ -210,6 +215,7 @@ bool semanticAnalyzer::SemanticAnalyzer::CheckTypeFit(const SymbolType* a, const
 }
 bool semanticAnalyzer::SemanticAnalyzer::CheckOutOfIndex(const SymbolType* arrayType, int index)
 {
+	if (arrayType == nullptr || !arrayType->isArray) return false;
 	if (arrayType != NULL && arrayType->isArray && index >= 0) {
 		int elemWidth = arrayType->subArrayType->width;
 		if (index < arrayType->width / elemWidth)
@@ -236,6 +242,7 @@ bool semanticAnalyzer::SemanticAnalyzer::CheckIsArray(const std::string& lexeme)
 }
 bool semanticAnalyzer::SemanticAnalyzer::CheckIsAssignArrayAddr(const SymbolType* type)
 {
+	if (type == nullptr) return true;
 	if (type->isArray)
 	{
 		std::ofstream fp2 = std::ofstream("exe3/sample.err", std::ios::app);

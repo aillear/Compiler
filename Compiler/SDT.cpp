@@ -107,7 +107,17 @@ NonTerminal* SemanticAnalyzer::Stmt(int i) {
 		CheckUndefinedVariable(id->lexval);
 		CheckIsAssignArrayAddr(get(id->lexval));
 		CheckTypeFit(get(id->lexval), (SymbolType*)expr->param["type"]);
-		gen(std::format("{} = {}", id->lexval, *(std::string*)expr->param["addr"]));
+		SymbolType* t = get(id->lexval);
+		if (t == nullptr) {
+			t = new SymbolType(false, 4, "int", "");
+		}
+
+		if (t->baseType != ((SymbolType*)expr->param["type"])->baseType) {
+			gen(std::format("{} = ({}){}", id->lexval, get(id->lexval)->baseType, *(std::string*)expr->param["addr"]));
+		}
+		else {
+			gen(std::format("{} = {}", id->lexval, *(std::string*)expr->param["addr"]));
+		}
 	}
 	else if (i == 1) // loc = expr ; 
 	{
@@ -118,7 +128,16 @@ NonTerminal* SemanticAnalyzer::Stmt(int i) {
 		PopStatesAndNotesFlow(1);
 		CheckIsAssignArrayAddr((SymbolType*)loc->param["type"]);
 		CheckTypeFit((SymbolType*)loc->param["type"], (SymbolType*)expr->param["type"]);
-		gen(std::format("{}[{}] = {}", ((SymbolType*)loc->param["array"])->name, *(std::string*)loc->param["addr"] ,*(std::string*)expr->param["addr"]));
+		SymbolType* t = (SymbolType*)loc->param["type"];
+		if (t == nullptr) {
+			t = new SymbolType(false, 4, "int", "");
+		}
+		if (t->baseType != ((SymbolType*)expr->param["type"])->baseType) {
+			gen(std::format("{}[{}] = ({}){}", ((SymbolType*)loc->param["array"])->name, *(std::string*)loc->param["addr"],t->baseType, *(std::string*)expr->param["addr"]));
+		}
+		else {
+			gen(std::format("{}[{}] = {}", ((SymbolType*)loc->param["array"])->name, *(std::string*)loc->param["addr"], *(std::string*)expr->param["addr"]));
+		}
 	}
 	else if (i == 2) // if ( bool ) M stmt1
 	{
