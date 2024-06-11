@@ -53,12 +53,14 @@ stmts    → ε
 stmt     → id = expr ; 
                 {
                     checkUndefinedVariable(id.lexval);
+                    CheckIsAssignArrayAddr(get(id.lexval));
                     checkTypeFit(id.type, expr.type);
                     gen(id.lexval'='expr.addr);
                 }
 stmt → loc = expr ; 
                 {
-                    checkTypeFit(loc.array.base, expr.type);
+                    CheckIsAssignArrayAddr(loc.type);
+                    checkTypeFit(loc.type, expr.type);
                     gen(loc.array.name'['loc.addr']''='expr.addr);
                 }
 stmt → if ( bool ) M stmt1	
@@ -115,7 +117,7 @@ loc      → loc1 [ num ]
                 {
                     loc.array=loc1.array;
                     loc.type=loc1.type.elem;
-                    checkOutOfIndex(loc.type, num.lexval)
+                    checkOutOfIndex(loc1.type, num.lexval)
                     t=new Temp();
                     loc.addr=new Temp();
                     gen(t'='num.lexval'*'loc.type.width);
@@ -127,7 +129,7 @@ loc      → id [ num ]
 					checkIsArray(id.lexval);
                     loc.array=top.get(id.lexval);
                     loc.type=loc.array.type.elem;
-                    checkOutOfIndex(loc.array.type, num.lexval)
+                    checkOutOfIndex(loc.array, num.lexval)
                     loc.addr=new Temp();    
                     gen(loc.addr'='num.lexval'*'loc.type.width)
                 }
@@ -273,3 +275,4 @@ checkIsInLoop(): 检查当前是否在某个循环,检测不通过则报错
 checkUndefinedVariable(id.lexval):检测这个id是否在符号表内,检测不通过则报错
 checkTypeFit(typeA, typeB):检测左部类型是否能使用右部类型赋值,检测不通过则报错
 checkOutOfIndex(arrayType, index):检测输入的index是否合法,检测不通过则报错
+CheckIsAssignArrayAddr(get(id.lexval)):检测输入的id是不是数组.是则禁止赋值

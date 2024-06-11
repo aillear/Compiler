@@ -201,7 +201,7 @@ bool semanticAnalyzer::SemanticAnalyzer::CheckTypeFit(const SymbolType* a, const
 	if (a->baseType != str)
 	{
 		std::ofstream fp2 = std::ofstream("exe3/sample.err", std::ios::app);
-		fp2 << std::format("Error: Type mismatch: {} & {} @ ({}, {})",a->baseType, b->baseType, lexer::GetLexer().line, lexer::GetLexer().row) << std::endl;
+		fp2 << std::format("Error: Type mismatch: {} & {} @ ({}, {})",a->baseType, b->baseType, lexer::GetLexer().line-1, lexer::GetLexer().row) << std::endl;
 		hasError = true;
 		fp2.close();
 		return false;
@@ -228,6 +228,18 @@ bool semanticAnalyzer::SemanticAnalyzer::CheckIsArray(const std::string& lexeme)
 	{
 		std::ofstream fp2 = std::ofstream("exe3/sample.err", std::ios::app);
 		fp2 << std::format("Error: {} is not an array @ ({}, {})", lexeme, lexer::GetLexer().line, lexer::GetLexer().row) << std::endl;
+		hasError = true;
+		fp2.close();
+		return false;
+	}
+	return true;
+}
+bool semanticAnalyzer::SemanticAnalyzer::CheckIsAssignArrayAddr(const SymbolType* type)
+{
+	if (type->isArray)
+	{
+		std::ofstream fp2 = std::ofstream("exe3/sample.err", std::ios::app);
+		fp2 << std::format("Error: {} is a array's address. Can't be reassigned @ ({}, {})", type->name, lexer::GetLexer().line-1, lexer::GetLexer().row) << std::endl;
 		hasError = true;
 		fp2.close();
 		return false;
@@ -280,7 +292,6 @@ void semanticAnalyzer::SemanticAnalyzer::analysis()
 				// 规约
 				GrammarRule gr = GetGrammarList().GetGR(p.second);
 				// 出栈
-
 				PrintInputStack();
 				std::cout << "Reduce by " << gr << "\n";
 				std::cout << input << " " << state << "\n\n";

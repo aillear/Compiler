@@ -126,6 +126,7 @@ namespace semanticAnalyzer {
 		bool CheckTypeFit(const SymbolType* a, const SymbolType* b); // 检查类型是否匹配
 		bool CheckOutOfIndex(const SymbolType* arrayType, int index); // 检查数组越界
 		bool CheckIsArray(const std::string& lexeme); // 检查是否是数组
+		bool CheckIsAssignArrayAddr(const SymbolType* type);  // 检查是否给数组地址赋值
 		void PrintInputStack(); // 打印输入栈
 		// 语义分析
 		void analysis();			

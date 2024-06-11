@@ -105,6 +105,7 @@ NonTerminal* SemanticAnalyzer::Stmt(int i) {
 		Terminal* id = (Terminal*)NotesFlow.top();
 		PopStatesAndNotesFlow(1);
 		CheckUndefinedVariable(id->lexval);
+		CheckIsAssignArrayAddr(get(id->lexval));
 		CheckTypeFit(get(id->lexval), (SymbolType*)expr->param["type"]);
 		gen(std::format("{} = {}", id->lexval, *(std::string*)expr->param["addr"]));
 	}
@@ -115,7 +116,8 @@ NonTerminal* SemanticAnalyzer::Stmt(int i) {
 		PopStatesAndNotesFlow(2);
 		NonTerminal* loc = (NonTerminal*)NotesFlow.top();
 		PopStatesAndNotesFlow(1);
-		CheckTypeFit((SymbolType*)loc->param["array"], (SymbolType*)expr->param["type"]);
+		CheckIsAssignArrayAddr((SymbolType*)loc->param["type"]);
+		CheckTypeFit((SymbolType*)loc->param["type"], (SymbolType*)expr->param["type"]);
 		gen(std::format("{}[{}] = {}", ((SymbolType*)loc->param["array"])->name, *(std::string*)loc->param["addr"] ,*(std::string*)expr->param["addr"]));
 	}
 	else if (i == 2) // if ( bool ) M stmt1
@@ -222,7 +224,7 @@ NonTerminal* SemanticAnalyzer::Loc(int i) {
 		PopStatesAndNotesFlow(1);
 		loc->param["array"] = loc1->param["array"];
 		loc->param["type"] = ((SymbolType*)loc1->param["type"])->subArrayType;
-		CheckOutOfIndex((SymbolType*)loc->param["type"], std::stoi(num->lexval));
+		CheckOutOfIndex((SymbolType*)loc1->param["type"], std::stoi(num->lexval));
 		std::string* t = newTemp();
 		loc->param["addr"] = newTemp();
 		gen(std::format("{} = {} * {}", *t, num->lexval, ((SymbolType*)loc->param["type"])->width));
@@ -241,7 +243,7 @@ NonTerminal* SemanticAnalyzer::Loc(int i) {
 		loc->param["type"] = get(id->lexval)->subArrayType;
 		// 数组越界,避免报错
 		int w = 0;
-		if (CheckOutOfIndex((SymbolType*)loc->param["type"], std::stoi(num->lexval))) {
+		if (CheckOutOfIndex((SymbolType*)loc->param["array"], std::stoi(num->lexval))) {
 			w = ((SymbolType*)loc->param["type"])->width;
 		}
 		std::string* t = newTemp();
