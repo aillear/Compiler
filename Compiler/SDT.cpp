@@ -3,15 +3,19 @@
 #include <format>
 using namespace semanticAnalyzer;
 // 统一规定：0是第一条产生式
-NonTerminal* SemanticAnalyzer::Program()
+NonTerminal* SemanticAnalyzer::Program() //  basic id ( ) block
 {
 	NonTerminal* program = new NonTerminal("program");
 	NonTerminal* block = (NonTerminal*)NotesFlow.top();
+	// pop states and notes flow at the same time for 5 times
 	PopStatesAndNotesFlow(5);
-	backpatch((std::vector<int>*)block->param["nextlist"], nextInStr);
+	// backpatch the nextlist of block
+	// there is a param map in all nonterminal with the std::unordered_map<std::string, void*> format
+	// so here we cast "block->param["nextlist"]"@void* to "std::vector<int>*"
+	backpatch((std::vector<int>*)block->param["nextlist"], nextInStr); 
 	return program;
 }
-NonTerminal* SemanticAnalyzer::Block() {
+NonTerminal* SemanticAnalyzer::Block() { // { decls stmts } 
 	PopStatesAndNotesFlow(1);
 	NonTerminal* stmts = (NonTerminal*)NotesFlow.top();
 	PopStatesAndNotesFlow(3);
@@ -22,13 +26,13 @@ NonTerminal* SemanticAnalyzer::Block() {
 	return block;
 }
 NonTerminal* SemanticAnalyzer::Decls(int i) {
-	if (i == 0)
+	if (i == 0) // decls decl
 	{
 		PopStatesAndNotesFlow(2);
 	}
-	return new NonTerminal("decls");
+	return new NonTerminal("decls"); // epslion
 }
-NonTerminal* SemanticAnalyzer::Decl() {
+NonTerminal* SemanticAnalyzer::Decl() { // type id ;
 	PopStatesAndNotesFlow(1);
 	Terminal* id = (Terminal*)NotesFlow.top();
 	PopStatesAndNotesFlow(1);
@@ -41,7 +45,7 @@ NonTerminal* SemanticAnalyzer::Decl() {
 }
 NonTerminal* SemanticAnalyzer::Type(int i) {
 	NonTerminal* type = new NonTerminal("type");
-	if (i == 0) {
+	if (i == 0) { // type [ num ]
 		PopStatesAndNotesFlow(1);
 		Terminal* num = (Terminal*)NotesFlow.top();
 		PopStatesAndNotesFlow(2);
@@ -64,11 +68,11 @@ NonTerminal* SemanticAnalyzer::Type(int i) {
 NonTerminal* SemanticAnalyzer::Basic(int i) {
 	NonTerminal* basic = new NonTerminal("basic");
 	PopStatesAndNotesFlow(1);
-	if (i == 0) {
+	if (i == 0) { // int
 		basic->param["type"] = new std::string("float");
 		basic->param["width"] = new int(8);
 	}
-	else {
+	else { // float
 		basic->param["type"] = new std::string("int");
 		basic->param["width"] = new int(4);
 	}
@@ -76,7 +80,7 @@ NonTerminal* SemanticAnalyzer::Basic(int i) {
 }
 NonTerminal* SemanticAnalyzer::Stmts(int i) {
 	NonTerminal* stmts = new NonTerminal("stmts");
-	if(i == 0)
+	if(i == 0) // stmts stmt
 	{
 		NonTerminal* stmt = (NonTerminal*)NotesFlow.top();
 		PopStatesAndNotesFlow(1);
@@ -88,7 +92,7 @@ NonTerminal* SemanticAnalyzer::Stmts(int i) {
 		stmts->param["nextlist"] = stmt->param["nextlist"];
 		stmts->param["breaklist"] = merge((std::vector<int>*)stmt->param["breaklist"], (std::vector<int>*)stmts1->param["breaklist"]);
 		stmts->param["continuelist"] = merge((std::vector<int>*)stmt->param["continuelist"], (std::vector<int>*)stmts1->param["continuelist"]);
-	}
+	} // else : epslion
 	return stmts;
 }
 NonTerminal* SemanticAnalyzer::Stmt(int i) {

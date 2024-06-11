@@ -39,10 +39,9 @@ namespace semanticAnalyzer {
 
 	struct SymbolType
 	{
-		// 此项为false,则该类型不为数组
-		bool isArray;
+		bool isArray;	// 此项为false,则该类型不为数组
 		int width;		// 此类型的宽度
-		std::string name;
+		std::string name;	// 类型名
 		std::string baseType;  // 数组基类型.如果isArray==false,则此项为该Symbol的类型
 		SymbolType* subArrayType;  // 子数组类型.如果isArray==false,则此项为null
 		SymbolType(bool isA, int w, std::string bt, std::string n, SymbolType* sub=nullptr) 
@@ -54,8 +53,8 @@ namespace semanticAnalyzer {
 	// 单张符号表
 	struct SymbolTable
 	{
-		SymbolTable* fatherTable;
-		std::unordered_map<std::string, SymbolType*> table;
+		SymbolTable* fatherTable; // 父符号表
+		std::unordered_map<std::string, SymbolType*> table; // 符号表
 		SymbolTable(SymbolTable* father = nullptr) : fatherTable(father) {}
 		~SymbolTable() {
 			fatherTable = nullptr;
@@ -85,11 +84,11 @@ namespace semanticAnalyzer {
 	{
 	public:
 		static SymbolTables& Instance();
-		SymbolTable* currentTable;
-		void insert(const std::string& name, SymbolType* type);
+		SymbolTable* currentTable; 
+		void insert(const std::string& name, SymbolType* type); 
 		bool lookup(const std::string& name, SymbolType* &outType);
-		void newZone();
-		void deleteZone();
+		void newZone(); // 新建作用域
+		void deleteZone(); // 删除作用域
 	private:
 		SymbolTables();
 		static SymbolTables* instance;
@@ -106,31 +105,31 @@ namespace semanticAnalyzer {
 		int loopCounter = 0;    // 循环层数计数
 		std::stack<NoteBase*> NotesFlow;	// 符号栈
 		std::stack<int> states;				// 状态栈
-		NoteBase* top = nullptr;
-		bool hasError = false;
+		NoteBase* top = nullptr;			// 符号栈顶
+		bool hasError = false;				// 是否有错误
 		std::map<int, std::string> GenResult;  // gen输出的结果
-		void PopInputStack();
-		void PopStatesAndNotesFlow(int i);
-		std::string* newTemp();
-		void gen(const std::string& str);
-		void put(const std::string& lexeme, SymbolType* type);
-		SymbolType* get(const std::string& lexeme);
-		std::vector<int>* makeList(int i);
-		std::vector<int>* merge(std::vector<int>* p1, std::vector<int>* p2);
-		void backpatch(std::vector<int> *p, int i);
-		bool checkIsInLoop();
-		SymbolType* maxType(const SymbolType* a, const SymbolType* b);
-		SymbolType* createType(std::string baseType, std::string name, std::stack<int>* arrayIndexsPos);
-		NonTerminal* SDTHandler(int SDTnum);
+		void PopInputStack(); // 弹出输入栈
+		void PopStatesAndNotesFlow(int i); // 弹出状态栈和符号栈
+		std::string* newTemp(); // 生成新的临时变量
+		void gen(const std::string& str); // 生成三元式
+		void put(const std::string& lexeme, SymbolType* type); // 将符号插入符号表
+		SymbolType* get(const std::string& lexeme); // 从符号表中获取符号
+		std::vector<int>* makeList(int i); // 生成一个新的列表
+		std::vector<int>* merge(std::vector<int>* p1, std::vector<int>* p2); // 合并两个列表
+		void backpatch(std::vector<int> *p, int i); // 回填
+		bool checkIsInLoop(); // 检查是否在循环中
+		SymbolType* maxType(const SymbolType* a, const SymbolType* b); // 获取两个类型的最大类型
+		SymbolType* createType(std::string baseType, std::string name, std::stack<int>* arrayIndexsPos); // 创建一个类型
+		NonTerminal* SDTHandler(int SDTnum); // SDT处理函数
 		// error detect
-		bool CheckUndefinedVariable(const std::string& lexeme);
-		bool CheckTypeFit(const SymbolType* a, const SymbolType* b);
-		bool CheckOutOfIndex(const SymbolType* arrayType, int index);
-		bool CheckIsArray(const std::string& lexeme);
-		void PrintInputStack();
-
-		void analysis();	// 就是slr分析器,不过要加一下内容
-		void output(std::ostream &fp1);		// 输出
+		bool CheckUndefinedVariable(const std::string& lexeme); // 检查未定义变量
+		bool CheckTypeFit(const SymbolType* a, const SymbolType* b); // 检查类型是否匹配
+		bool CheckOutOfIndex(const SymbolType* arrayType, int index); // 检查数组越界
+		bool CheckIsArray(const std::string& lexeme); // 检查是否是数组
+		void PrintInputStack(); // 打印输入栈
+		// 语义分析
+		void analysis();			
+		void output(std::ostream &fp1);
 		SemanticAnalyzer();
 	private:
 		static SemanticAnalyzer* instance;
