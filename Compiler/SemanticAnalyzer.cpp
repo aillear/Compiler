@@ -207,19 +207,17 @@ bool semanticAnalyzer::SemanticAnalyzer::CheckTypeFit(const SymbolType* a, const
 }
 bool semanticAnalyzer::SemanticAnalyzer::CheckOutOfIndex(const SymbolType* arrayType, int index)
 {
-	if (!arrayType->isArray || index < 0) {
-		return false;
+	if (arrayType != NULL && arrayType->isArray && index >= 0) {
+		int elemWidth = arrayType->subArrayType->width;
+		if (index < arrayType->width / elemWidth)
+			return true;
 	}
-	int elemWidth = arrayType->subArrayType->width;
-	if (index >= arrayType->width / elemWidth) 
-	{
-		std::ofstream fp2 = std::ofstream("exe3/sample.err", std::ios::app);
-		fp2 << std::format("Error: Array out of index @ ({}, {})", lexer::GetLexer().line, lexer::GetLexer().row) << std::endl;
-		hasError = true;
-		fp2.close();
-		return false;
-	}
-	return true;
+
+	std::ofstream fp2 = std::ofstream("exe3/sample.err", std::ios::app);
+	fp2 << std::format("Error: Array out of index @ ({}, {})", lexer::GetLexer().line, lexer::GetLexer().row) << std::endl;
+	hasError = true;
+	fp2.close();
+	return false;
 }
 bool semanticAnalyzer::SemanticAnalyzer::CheckIsArray(const std::string& lexeme)
 {

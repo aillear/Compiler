@@ -235,10 +235,14 @@ NonTerminal* SemanticAnalyzer::Loc(int i) {
 		CheckIsArray(id->lexval);
 		loc->param["array"] = get(id->lexval);
 		loc->param["type"] = get(id->lexval)->subArrayType;
-		CheckOutOfIndex((SymbolType*)loc->param["type"], std::stoi(num->lexval));
+		// 数组越界,避免报错
+		int w = 0;
+		if (CheckOutOfIndex((SymbolType*)loc->param["type"], std::stoi(num->lexval))) {
+			w = ((SymbolType*)loc->param["type"])->width;
+		}
 		std::string* t = newTemp();
 		loc->param["addr"] = t;
-		gen(std::format("{} = {} * {}", *t, num->lexval, ((SymbolType*)loc->param["type"])->width));
+		gen(std::format("{} = {} * {}", *t, num->lexval, w));
 	}
 	return loc;
 }
