@@ -1,51 +1,37 @@
 int main(){
-	// decl
 	int a;
 	int b;
 	float c;
 	float d;
 	int[5][4] e;
 	float[5][4] f; 
-
-	// basic
-	a = 1;
+	a = 1; // basic
 	c = 2;
 	d = 2.2;
 	b = a;
 	b = 1.1; // type fit error
-
-	// array
 	a = e[2][2];
 	f[2][3] = 4.1;
 	e[1][2] = 3.5; 	// type fit error
 	e[2] = 5;		// try to ressign array address error
 	e[5][2] = 6;	// out of index error
 	a[1] = 5;		// a is not array
-	
-	// expr
-	a = 1 * 2 + 3 - 5 / 4 + (6 + 7 / 2);
-
-	// undefined identifier
-	g = 7;
-	if (true) {
+	a = 1 * 2+ (6 + 7.0 / 2) + 3 - 5 / 4 ;
+	g = 7;		
+	if (a > 3) {
 		int g;
 		g = 8;
 		b = g + 1;
 		h = 10;		// undefined identifier
 	}
-
-	// do while and break, continue
 	do {
 		if (b > 10) continue;
 		else if (c > 10) break;
+		a = 1;
 	} while (a > 10);
-	
-	// while loop and bool
 	while (a < 1 && b > 2 || c < 3 && d + a < 5) {
 		a = -a;
 	}
-
-	// break and continue error
 	break;
 	continue;
 }

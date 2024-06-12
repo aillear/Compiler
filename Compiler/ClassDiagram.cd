@@ -1,112 +1,161 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
+<ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="lexer::Token" Collapsed="true">
-    <Position X="2.75" Y="0.5" Width="1.5" />
+    <Position X="3" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAACAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAARAAA=</HashCode>
       <FileName>Lexer.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="lexer::Num" Collapsed="true">
-    <Position X="0.5" Y="1.75" Width="1.5" />
+    <Position X="0.75" Y="1.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>ICAAAAAAAAAAAAAEAAAAAAAAAAAAACAAAAAAAAAAAAA=</HashCode>
       <FileName>Lexer.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="lexer::Real" Collapsed="true">
-    <Position X="2.75" Y="1.75" Width="1.5" />
+    <Position X="3" Y="1.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAEAAAAACAAAAAAACAAAAAAgAAAAAA=</HashCode>
       <FileName>Lexer.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="lexer::Word" Collapsed="true">
-    <Position X="5" Y="1.75" Width="1.5" />
+    <Position X="5.25" Y="1.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAEAAAAAAAAAAAAEAAAAAAAAAAAAAAAAACIAAAAAAAA=</HashCode>
       <FileName>Lexer.h</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="lexer::Type">
-    <Position X="5" Y="3.25" Width="1.5" />
+  <Class Name="lexer::Type" Collapsed="true">
+    <Position X="5.25" Y="3.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAQAAAAAAAgA=</HashCode>
       <FileName>Lexer.h</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="lexer::SymbolTable">
-    <Position X="13.25" Y="3.75" Width="2.5" />
+  <Class Name="lexer::OldSymbolTable" Collapsed="true">
+    <Position X="9.5" Y="1.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAIAAAAABAAAAQAAAAAAAAAACAAAAAAAAAAAI=</HashCode>
+      <HashCode>AAAAAAAAIAAAAABAAAAgAAAAAAAAAAAAAABAAAAAAAI=</HashCode>
       <FileName>Lexer.h</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="lexer::Lexer">
-    <Position X="0.5" Y="3.25" Width="1.75" />
+  <Class Name="lexer::Lexer" Collapsed="true">
+    <Position X="7.75" Y="1.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAUAAAYAAAAAAAAAAAAAAABCAABAAAAAQDACAAAAAEA=</HashCode>
+      <HashCode>AAUAAAYAAAAAAgAAAAAAAABCAABAQAAAQDACAAAAAEA=</HashCode>
       <FileName>Lexer.h</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="parser::TableLine">
-    <Position X="15.75" Y="1.5" Width="5" />
+  <Class Name="parser::TableLine" Collapsed="true">
+    <Position X="11.25" Y="2.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAACAAAAAAAAAAQAAAAAAAIAAAAAAAAAIA=</HashCode>
       <FileName>Parser.h</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="parser::AnalysisTable">
-    <Position X="3.75" Y="6.75" Width="3.5" />
+  <Class Name="parser::AnalysisTable" Collapsed="true">
+    <Position X="7.75" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAABAAAQgAAAAEAhAAAAIUAAAAAAAQAA=</HashCode>
       <FileName>Parser.h</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="parser::GrammarList">
-    <Position X="3.5" Y="10" Width="3" />
+  <Class Name="parser::GrammarList" Collapsed="true">
+    <Position X="11.25" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAIAAAAAAABAAAAARAEAAAAAAIA=</HashCode>
+      <HashCode>AAAIAAAAAAAAAAAAAAIAAAAAAABAAAAARAEAAAAAAIA=</HashCode>
       <FileName>Parser.h</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="parser::Parser">
-    <Position X="9.25" Y="1.5" Width="3.5" />
+  <Class Name="parser::Parser" Collapsed="true">
+    <Position X="11.25" Y="1.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAEgAAAAIAAAAAAAAAAAAAgAFABAAAAAQIAABwAAAAA=</HashCode>
       <FileName>Parser.h</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="parser::FollowSet">
-    <Position X="9.25" Y="7.5" Width="3.75" />
+  <Class Name="parser::FollowSet" Collapsed="true">
+    <Position X="9.5" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAEAAgBAAAAAUIAAAAAAAAA=</HashCode>
       <FileName>Parser.h</FileName>
     </TypeIdentifier>
   </Class>
-  <Struct Name="lexer::SymbolEntry">
-    <Position X="13.5" Y="6.5" Width="1.5" />
+  <Class Name="semanticAnalyzer::NoteBase" Collapsed="true">
+    <Position X="1.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAQAAAAAAAAAAAAAAAAACAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SemanticAnalyzer.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="semanticAnalyzer::Terminal" Collapsed="true">
+    <Position X="0.5" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAEAAAAAA=</HashCode>
+      <FileName>SemanticAnalyzer.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="semanticAnalyzer::NonTerminal" Collapsed="true">
+    <Position X="2.75" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAACAAAAAA=</HashCode>
+      <FileName>SemanticAnalyzer.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="semanticAnalyzer::SymbolTables" Collapsed="true">
+    <Position X="9.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACBAAAAAAAAAAAAAAGBAAACAQAAAAAAAAIA=</HashCode>
+      <FileName>SemanticAnalyzer.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="semanticAnalyzer::SemanticAnalyzer">
+    <Position X="14.25" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>FBgkCRBGJAEEgwgoCABgQEgACQhAAEAEWUMIABKBDAU=</HashCode>
+      <FileName>SemanticAnalyzer.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="lexer::SymbolEntry" Collapsed="true">
+    <Position X="11.25" Y="3.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAFAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Lexer.h</FileName>
     </TypeIdentifier>
   </Struct>
-  <Struct Name="parser::GrammarRule">
-    <Position X="9.5" Y="5.75" Width="1.5" />
+  <Struct Name="parser::GrammarRule" Collapsed="true">
+    <Position X="9.5" Y="3.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAABAAAAAAAAAAIAAAAAAAAAAAAgAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAABAAAAAAAAAAIQAAAAAAAAAAAgAA=</HashCode>
       <FileName>Parser.h</FileName>
     </TypeIdentifier>
   </Struct>
-  <Struct Name="parser::Error">
-    <Position X="13.25" Y="1.5" Width="2.25" />
+  <Struct Name="parser::Error" Collapsed="true">
+    <Position X="7.75" Y="3.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAEAAAAAAAAAAQAAAAAAAAACAAAAAAAAAAQAAAAAAAA=</HashCode>
       <FileName>Parser.h</FileName>
     </TypeIdentifier>
   </Struct>
+  <Struct Name="semanticAnalyzer::SymbolType" Collapsed="true">
+    <Position X="9.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAQAAgAAQAAACAAAAAgMAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SemanticAnalyzer.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="semanticAnalyzer::SymbolTable" Collapsed="true">
+    <Position X="7.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQAAAAAABAAABAAAAQAAAAACAAAACAAAAAAAAAAAA=</HashCode>
+      <FileName>SemanticAnalyzer.h</FileName>
+    </TypeIdentifier>
+  </Struct>
   <Enum Name="lexer::Tag" Collapsed="true">
-    <Position X="7.25" Y="5.75" Width="1.5" />
+    <Position X="7.75" Y="6" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AACFIgQCKgMEIAAgQMMgCACCgBkJIFgaIAAgYAAKAQg=</HashCode>
       <FileName>Tag.h</FileName>

@@ -148,7 +148,7 @@ bool semanticAnalyzer::SemanticAnalyzer::checkIsInLoop()
 {
 	if (loopCounter <= 0) {
 		std::ofstream fp2 = std::ofstream("exe3/sample.err", std::ios::app);
-		fp2 << std::format("Error: Break/Continue must be in a loop @ ({}, {})", lexer::GetLexer().line, lexer::GetLexer().row) << std::endl;
+		fp2 << std::format("Error: Break/Continue must be in a loop @ ({}, {})", lexer::GetLexer().line-1, lexer::GetLexer().row) << std::endl;
 		hasError = true;
 		fp2.close();
 	}

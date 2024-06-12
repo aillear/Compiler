@@ -142,6 +142,7 @@ void static exe3()
     truncateFile.close();
     fp = fopen(fileName.c_str(), "r");
     GetLexer().SetFilePointer(fp);
+    GetSemanticAnalyzer().SetStartWith(100);
     GetSemanticAnalyzer().analysis();
     GetSemanticAnalyzer().output(outFile1);
     if (GetSemanticAnalyzer().hasError == true)
